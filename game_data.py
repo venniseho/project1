@@ -108,12 +108,20 @@ class Item:
 class Player:
     """
     A Player in the text advanture game.
+    Functions:
+    - Move
+    - Pick up Items
+    - Use Items
 
     Instance Attributes:
-        - # TODO
+        - x: int
+        - y: int
+        - inventory: list[str]
+        - victory: bool
 
     Representation Invariants:
-        - # TODO
+        - self.x <= 6
+        - self.y <= 5
     """
 
     def __init__(self, x: int, y: int) -> None:
