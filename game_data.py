@@ -56,9 +56,9 @@ class Location:
         # TODO: Complete this method
 
     def items_available(self):
-    """
-    """
-    # TODO: Complete this method
+        """
+        """
+        # TODO: Complete this method
 
     def actions_available(self):
         """
@@ -116,12 +116,14 @@ class Player:
     Instance Attributes:
         - x: int
         - y: int
-        - inventory: list[str]
+        - inventory: list[Item]
+        - points: int
         - victory: bool
 
     Representation Invariants:
-        - self.x <= 6
-        - self.y <= 5
+        - 0 <= self.x <= 6
+        - 0 <= self.y <= 5
+        - self.points >= 0
     """
 
     def __init__(self, x: int, y: int) -> None:
@@ -136,7 +138,27 @@ class Player:
         self.x = x
         self.y = y
         self.inventory = []
+        self.points = 0
         self.victory = False
+
+    def pick_up(self, item: Item) -> str:
+        """Picks up an item an adds it to the player's inventory and prints out the successful pick up"""
+        self.inventory.append(item)
+        return "You have successfully picked up " + item.name
+
+    def move(self, d: str, world_map: World) -> str:
+        """Given a direction (N, S, W, E), update the player's location in that direction given the move is valid
+        TODO: World_map can't be entered with type world for some reason
+        """
+        direction = {'N': (0, -1), 'S': (0, 1), 'W': (-1, 0), 'E': (1, 0)}
+        new_x = self.x + direction[d][0]
+        new_y = self.x + direction[d][1]
+        if world_map.map[new_x, new_y] == -1:
+            return "Invalid, this square is unaccessible"
+        else:
+            self.x = new_x
+            self.y = new_y
+            return "TODO - Replace this with something"
 
 
 class World:
@@ -144,13 +166,16 @@ class World:
 
     Instance Attributes:
         - map: a nested list representation of this world's map
-        - # TODO add more instance attributes as needed; do NOT remove the map attribute
+        - location: a nested list representation of locations their descriptions
+        - items: a nested list representation of items
 
     Representation Invariants:
-        - # TODO
+        - self.map != []
+        - self.locations != []
+        - self.items != []
     """
 
-    def __init__(self, map_data: TextIO, location_data: TextIO, items_data: TextIO) -> None:
+    def __init__(self, map_data: TextIO, location_data: TextIO, item_data: TextIO) -> None:
         """
         Initialize a new World for a text adventure game, based on the data in the given open files.
 
@@ -169,6 +194,8 @@ class World:
 
         # The map MUST be stored in a nested list as described in the load_map() function's docstring below
         self.map = self.load_map(map_data)
+        self.locations = self.load_locations(location_data)
+        self.items = self.load_items(item_data)
 
         # NOTE: You may choose how to store location and item data; create your own World methods to handle these
         # accordingly. The only requirements:
@@ -187,10 +214,50 @@ class World:
 
         Return this list representation of the map.
         """
+        map = []
+        line = map_data.readline().strip()
+        while line != '':
+            line = line.split(' ')
+            row = [int(num) for num in line]
+            map.append(row)
+            line = map_data.readline().strip()
+        return map
 
-        # TODO: Complete this method as specified. Do not modify any of this function's specifications.
+    def load_locations(self, location_data: TextIO) -> list[list[any]]:
+        """Store locations from open file location_data as the location attribute of this object, as a nested list.
+        Location list is structured such that each index corresponds to the location number. E.g. Hallway is location
+        0 so can be accessed by indexing the list at 0. Null space is -1 so can be accessed by indexing list at -1.
+        List is in the form [Name, Points, Short, Long]
+        """
+        locations = []
+        line = location_data.readline().strip()
+        while line != '':
+            row = []
+            row.append(line)
+            while line != 'END':
+                line = location_data.readline().strip()
+                row.append(line)
+            locations.append(row)
+            line = location_data.readline().strip()
+            line = location_data.readline().strip()
+        return [location[:4] for location in locations]
 
-    # TODO: Add methods for loading location data and item data (see note above).
+    def load_items(self, item_data: TextIO) -> list[list[any]]:
+        """Store locations from open file location_data as the location attribute of this object, as a nested list.
+        Location list is structured such that each index corresponds to the location number. E.g. Hallway is location
+        0 so can be accessed by indexing the list at 0. Null space is -1 so can be accessed by indexing list at -1.
+        List is in the form [Name, Points, Short, Long]
+        """
+        items = []
+        line = item_data.readline().strip()
+        line = item_data.readline().strip()
+        while line != '':
+            line = line.split(' ')
+            line[3] += ' ' + line.pop(4)
+            line = [int(num) for num in line[:3]] + [line[3]]
+            items.append(line)
+            line = item_data.readline().strip()
+        return items
 
     # NOTE: The method below is REQUIRED. Complete it exactly as specified.
     def get_location(self, x: int, y: int) -> Optional[Location]:

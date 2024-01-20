@@ -1,26 +1,83 @@
-LOCATION -1
+Hallway
+0
+Short
+Long
+END
+
+Room
+0
+Short
+Long
+END
+
+Subway Station
+0
+Short
+Long
+END
+
+EJ Pratt
+0
+Short
+Long
+END
+
+UC
+0
+Short
+Long
+END
+
+Myhal
+0
+Short
+Long
+END
+
+Bahen
+0
+Short
+Long
+END
+
+Con Hall
+0
+Short
+Long
+END
+
+King's College Circle
+0
+Short
+Long
+END
+
+Robarts Commons
+0
+Short
+Long
+END
+
+Robarts Library
+0
+Short
+Long
+END
+
+Chestnut
+0
+Short
+Long
+END
+
+Exam Centre
+0
+Short
+Long
+END
+
+Blocked
 0
 That way is blocked.
 That way is blocked.
-END
-
-LOCATION 1
-0
-You are on the first floor of the Robarts Library. There is an empty study room to the South, an exit from the library to the East.
-You are on the first floor of the Robarts Library. It's usually crowded at this time of the day, but today it's eerily quiet.
-Only a few students are studying inside one of the study rooms. You better not disturb them. A librarian stands near the
-service desk, looking bored and sleepy. There is an empty study room to the South, an exit from the library to the East.
-END
-
-LOCATION 2
-0
-This study room is completely empty.
-You are in an empty study room. And by empty, we mean, absolutely empty. All the tables and chairs have been taken out,
-the whiteboards taken off the wall, not even the carpeting is left. Are they planning to do something else with this space?
-END
-
-LOCATION 3
-0
-You are outside the Robarts library.
-You are outside the Robarts library on a crowded street. There is a smell of coffee in the air.
 END
