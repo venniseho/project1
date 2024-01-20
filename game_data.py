@@ -30,48 +30,28 @@ class Location:
     - long_desc: a long description of the location that prints if it is the player's first time visiting the location.
     - brief_desc: a brief description of the location that prints if the player has visited at least once before.
     - items: a list of items at the location that the player may interact with.
-    - directions: a list containing directions the player can move ['N', 'S', 'E', 'W']
-    - actions: a list containing actions that can be taken at that particular location
-               Ex. 'Use [item]', 'Pick up [item]', 'Drop [item]'
 
     Instance Attributes:
         - map_position: int
-        - first_visit: bool
-        - long_desc: str
+        - name: str
         - brief_desc: str
-
-        methods?
-        - items: lst[str]
-        - actions: lst[str]
+        - long_desc: str
+        - first_visit: bool
 
     Representation Invariants:
-        - # TODO
+        - map_position >= -1
     """
 
-    def __init__(self) -> None:
+    def __init__(self, map_position, name, brief_desc, long_desc) -> None:
         """Initialize a new location.
 
         # TODO Add more details here about the initialization if needed
         """
-        # TODO: Complete this method
-
-    def items_available(self):
-        """
-        """
-        # TODO: Complete this method
-
-    def actions_available(self):
-        """
-        Return the available actions in this location.
-        The actions should depend on the items available in the location
-        and the x,y position of this location on the world map.
-        """
-
-        # NOTE: This is just a suggested method
-        # i.e. You may remove/modify/rename this as you like, and complete the
-        # function header (e.g. add in parameters, complete the type contract) as needed
-
-        # TODO: Complete this method
+        self.map_position = map_position
+        self.name = name
+        self.brief_desc = brief_desc
+        self.long_desc = long_desc
+        self.first_visit = True
 
 
 class Item:
@@ -80,10 +60,15 @@ class Item:
     something triggered by pick up/deposit
 
     Instance Attributes:
-        - # TODO
+        - name: str
+        - start_position: int
+        - target_position: int
+        - target_points: int
 
     Representation Invariants:
-        - # TODO
+        - start_position >= -1
+        - target_position >= -1
+        - target_points >= 0
     """
 
     def __init__(self, name: str, start: int, target: int, target_points: int) -> None:
@@ -102,7 +87,16 @@ class Item:
         self.name = name
         self.start_position = start
         self.target_position = target
-        self.target_points = target_points
+        self.points = target_points
+
+    def get_item_info(self) -> str:
+        """
+        Returns a paragraph containing information about the item.
+        """
+        paragraph = f"Item: {self.name}" + \
+            f"Target Position: {self.target_position}"
+
+        return paragraph
 
 
 class Player:
@@ -142,11 +136,11 @@ class Player:
         self.victory = False
 
     def pick_up(self, item: Item) -> str:
-        """Picks up an item an adds it to the player's inventory and prints out the successful pick up"""
+        """Picks up an item and adds it to the player's inventory and prints out the successful pick up"""
         self.inventory.append(item)
         return "You have successfully picked up " + item.name
 
-    def move(self, d: str, world_map: World) -> str:
+    def move(self, d: str, world_map: Optional) -> str:
         """Given a direction (N, S, W, E), update the player's location in that direction given the move is valid
         TODO: World_map can't be entered with type world for some reason
         """
@@ -223,39 +217,49 @@ class World:
             line = map_data.readline().strip()
         return map
 
-    def load_locations(self, location_data: TextIO) -> list[list[any]]:
-        """Store locations from open file location_data as the location attribute of this object, as a nested list.
+    def load_locations(self, location_data: TextIO) -> list[Location]:
+        """Store locations from open file location_data as a nested list.
         Location list is structured such that each index corresponds to the location number. E.g. Hallway is location
         0 so can be accessed by indexing the list at 0. Null space is -1 so can be accessed by indexing list at -1.
-        List is in the form [Name, Points, Short, Long]
+        List is in the form [Name, Position, Short, Long]
         """
         locations = []
         line = location_data.readline().strip()
+
         while line != '':
-            row = []
-            row.append(line)
+            row = [line]
+
             while line != 'END':
                 line = location_data.readline().strip()
                 row.append(line)
-            locations.append(row)
-            line = location_data.readline().strip()
-            line = location_data.readline().strip()
-        return [location[:4] for location in locations]
 
-    def load_items(self, item_data: TextIO) -> list[list[any]]:
-        """Store locations from open file location_data as the location attribute of this object, as a nested list.
-        Location list is structured such that each index corresponds to the location number. E.g. Hallway is location
-        0 so can be accessed by indexing the list at 0. Null space is -1 so can be accessed by indexing list at -1.
-        List is in the form [Name, Points, Short, Long]
+            locations.append(Location(int(row[1]), row[0], row[2], row[3]))
+
+            line = location_data.readline().strip()
+            line = location_data.readline().strip()
+        return locations
+
+    def load_items(self, item_data: TextIO) -> dict[int, list[Item]]:
+        """Store items from open file item_data as a dictionary mapping the location number of the item to the items
+        whose start position is that same location.
+
+        Dictionary is structured as follows: {location_id1: [item1, item2], location_id2: [item3]}
         """
-        items = []
-        line = item_data.readline().strip()
+        items = {}
+
         line = item_data.readline().strip()
         while line != '':
             line = line.split(' ')
             line[3] += ' ' + line.pop(4)
-            line = [int(num) for num in line[:3]] + [line[3]]
-            items.append(line)
+
+            item = Item(line[3], int(line[0]), int(line[1]), int(line[2]))
+
+            if item.start_position not in items:
+                items[item.start_position] = [item]
+
+            else:
+                items[item.start_position].append(item)
+
             line = item_data.readline().strip()
         return items
 
@@ -266,4 +270,8 @@ class World:
          return None.)
         """
 
-        # TODO: Complete this method as specified. Do not modify any of this function's specifications.
+        if x < len(self.map[0]) and y < len(self.map) and self.map[y][x] != -1:
+            return self.locations[self.map[y][x]]
+
+        else:
+            return None

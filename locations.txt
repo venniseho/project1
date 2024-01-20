@@ -5,79 +5,79 @@ Long
 END
 
 Room
-0
+1
 Short
 Long
 END
 
-Subway Station
-0
+St. George Subway Station
+2
 Short
 Long
 END
 
 EJ Pratt
-0
+3
 Short
 Long
 END
 
-UC
-0
+University College
+4
 Short
 Long
 END
 
 Myhal
-0
+5
 Short
 Long
 END
 
-Bahen
-0
+Bahen Centre
+6
 Short
 Long
 END
 
-Con Hall
-0
+Convocation Hall
+7
 Short
 Long
 END
 
 King's College Circle
-0
+8
 Short
 Long
 END
 
 Robarts Commons
-0
+9
 Short
 Long
 END
 
 Robarts Library
-0
+10
 Short
 Long
 END
 
 Chestnut
-0
+11
 Short
 Long
 END
 
 Exam Centre
-0
+12
 Short
 Long
 END
 
 Blocked
-0
+-1
 That way is blocked.
 That way is blocked.
 END
