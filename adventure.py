@@ -20,6 +20,7 @@ This file is Copyright (c) 2024 CSC111 Teaching Team
 
 # Note: You may add in other import statements here as needed
 from game_data import World, Item, Location, Player
+from typing import Optional
 
 
 # Note: You may add helper functions, classes, etc. here as needed
@@ -44,6 +45,18 @@ def move(p: Player, d: str, world_map: World) -> str:
         return "TODO - Replace this with something"
 
 
+def location_description(place: Location, command: Optional[str] = None) -> None:
+    """
+    Prints out the location_description of a particular location
+    """
+    if location.first_visit or command == "look":
+        print(location.long_desc)
+        location.first_visit = False
+
+    else:
+        print(location.brief_desc)
+
+
 # Note: You may modify the code below as needed; the following starter template are just suggestions
 if __name__ == "__main__":
     w = World(open("map.txt"), open("locations.txt"), open("items.txt"))
@@ -56,14 +69,6 @@ if __name__ == "__main__":
 
         # Depending on whether it's been visited before,
         # print either full description (first time visit) or brief description (every subsequent visit)
-
-        # TODO: Make this a function
-        if location.first_visit:
-            print(location.long_desc)
-            location.first_visit = False
-
-        else:
-            print(location.brief_desc)
 
         print("What to do? \n")
         print("[menu]")

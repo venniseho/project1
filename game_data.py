@@ -18,38 +18,7 @@ please consult our Course Syllabus.
 
 This file is Copyright (c) 2024 CSC111 Teaching Team
 """
-from typing import Optional, TextIO
-
-
-class Location:
-    """A location in our text adventure game world.
-    - map_position: an integer representing where the player is on the world map.
-                    -1 represents inaccessible areas of the map.
-                    0 represents locations the player can walk through but containing no actions.
-    - first_visit: True if this is the player's first time arriving at the location. False otherwise.
-    - long_desc: a long description of the location that prints if it is the player's first time visiting the location.
-    - brief_desc: a brief description of the location that prints if the player has visited at least once before.
-    - items: a list of items at the location that the player may interact with.
-
-    Instance Attributes:
-        - map_position: int
-        - name: str
-        - brief_desc: str
-        - long_desc: str
-        - first_visit: bool
-
-    Representation Invariants:
-        - map_position >= -1
-    """
-
-    def __init__(self, map_position, name, brief_desc, long_desc) -> None:
-        """Initialize a new location.
-        """
-        self.map_position = map_position
-        self.name = name
-        self.brief_desc = brief_desc
-        self.long_desc = long_desc
-        self.first_visit = True
+from typing import Any, Optional, TextIO
 
 
 class Item:
@@ -87,14 +56,46 @@ class Item:
         self.target_position = target
         self.points = target_points
 
-    def get_item_info(self) -> str:
-        """
-        Returns a paragraph containing information about the item.
-        """
-        paragraph = f"Item: {self.name}" + \
-                    f"Target Position: {self.target_position}"
 
-        return paragraph
+class Location:
+    """A location in our text adventure game world.
+    - map_position: an integer representing where the player is on the world map.
+                    -1 represents inaccessible areas of the map.
+                    0 represents locations the player can walk through but containing no actions.
+    - first_visit: True if this is the player's first time arriving at the location. False otherwise.
+    - long_desc: a long description of the location that prints if it is the player's first time visiting the location.
+    - brief_desc: a brief description of the location that prints if the player has visited at least once before.
+    - items: a list of items at the location that the player may interact with.
+
+    Instance Attributes:
+        - map_position: int
+        - name: str
+        - brief_desc: str
+        - long_desc: str
+        - first_visit: bool
+
+    Representation Invariants:
+        - map_position >= -1
+    """
+
+    def __init__(self, map_position, name, brief_desc, long_desc) -> None:
+        """Initialize a new location.
+        """
+        self.map_position = map_position
+        self.name = name
+        self.brief_desc = brief_desc
+        self.long_desc = long_desc
+        self.first_visit = True
+
+    def available_items(self, item_dict: dict[Any, list[Item]]) -> list[Item]:
+        """
+        Returns a list of available items from item_dict at a particular location.
+        """
+        if self.map_position in item_dict:
+            return item_dict[self.map_position]
+
+        else:
+            return []
 
 
 class Player:
@@ -218,7 +219,7 @@ class World:
             line = location_data.readline().strip()
         return locations
 
-    def load_items(self, item_data: TextIO) -> dict[int, list[Item]]:
+    def load_items(self, item_data: TextIO) -> dict[Any, list[Item]]:
         """Store items from open file item_data as a dictionary mapping the location number of the item to the items
         whose start position is that same location.
 
@@ -240,6 +241,9 @@ class World:
                 items[item.start_position].append(item)
 
             line = item_data.readline().strip()
+
+        items["Inventory"] = []
+
         return items
 
     # NOTE: The method below is REQUIRED. Complete it exactly as specified.
