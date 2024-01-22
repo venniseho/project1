@@ -20,7 +20,7 @@ This file is Copyright (c) 2024 CSC111 Teaching Team
 
 # Note: You may add in other import statements here as needed
 from game_data import World, Item, Location, Player
-from typing import Optional
+from typing import Optional, Any
 
 
 # Note: You may add helper functions, classes, etc. here as needed
@@ -45,16 +45,27 @@ def move(p: Player, d: str, world_map: World) -> str:
         return "TODO - Replace this with something"
 
 
-def location_description(place: Location, command: Optional[str] = None) -> None:
+def location_description(curr_location: Location, command: Optional[str] = None) -> None:
     """
     Prints out the location_description of a particular location
     """
-    if location.first_visit or command == "look":
-        print(location.long_desc)
-        location.first_visit = False
+    if curr_location.first_visit or command == "look":
+        print(curr_location.long_desc)
+        curr_location.first_visit = False
 
     else:
-        print(location.brief_desc)
+        print(curr_location.brief_desc)
+
+
+def available_actions(curr_location: Location, item_data: dict[Any, list[Item]], player_inventory: list) \
+        -> dict[str, list[str]]:
+    """
+    Returns a list of available actions at a specific location.
+    """
+    actions = {"move": ['N', 'S', 'E', 'W'], "pick up": [curr_location.available_items(item_data)],
+               "use": [item.name for item in player_inventory if item.target_position == curr_location]}
+
+    return actions
 
 
 # Note: You may modify the code below as needed; the following starter template are just suggestions
