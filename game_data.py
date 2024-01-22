@@ -44,8 +44,6 @@ class Location:
 
     def __init__(self, map_position, name, brief_desc, long_desc) -> None:
         """Initialize a new location.
-
-        # TODO Add more details here about the initialization if needed
         """
         self.map_position = map_position
         self.name = name
