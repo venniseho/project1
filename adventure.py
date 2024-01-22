@@ -48,7 +48,7 @@ def move(p: Player, d: str, world_map: World) -> str:
 if __name__ == "__main__":
     w = World(open("map.txt"), open("locations.txt"), open("items.txt"))
     p = Player(0, 0)  # set starting location of player; you may change the x, y coordinates here as appropriate
-
+    print("Insert initial plot")
     menu = ["look", "inventory", "score", "quit", "back"]
 
     while not p.victory:
@@ -56,6 +56,8 @@ if __name__ == "__main__":
 
         # Depending on whether it's been visited before,
         # print either full description (first time visit) or brief description (every subsequent visit)
+
+        # TODO: Make this a function
         if location.first_visit:
             print(location.long_desc)
             location.first_visit = False
