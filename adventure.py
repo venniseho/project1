@@ -21,7 +21,28 @@ This file is Copyright (c) 2024 CSC111 Teaching Team
 # Note: You may add in other import statements here as needed
 from game_data import World, Item, Location, Player
 
+
 # Note: You may add helper functions, classes, etc. here as needed
+
+def pick_up(p: Player, item: Item) -> str:
+    """Picks up an item and adds it to the player's inventory and prints out the successful pick up"""
+    p.inventory.append(item)
+    return "You have successfully picked up " + item.name
+
+
+def move(p: Player, d: str, world_map: World) -> str:
+    """Given a direction (N, S, W, E), update the player's location in that direction given the move is valid
+    """
+    direction = {'N': (0, -1), 'S': (0, 1), 'W': (-1, 0), 'E': (1, 0)}
+    new_x = p.x + direction[d][0]
+    new_y = p.x + direction[d][1]
+    if world_map.map[new_x, new_y] == -1:
+        return "Invalid, this square is unaccessible"
+    else:
+        p.x = new_x
+        p.y = new_y
+        return "TODO - Replace this with something"
+
 
 # Note: You may modify the code below as needed; the following starter template are just suggestions
 if __name__ == "__main__":

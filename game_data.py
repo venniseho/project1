@@ -94,7 +94,7 @@ class Item:
         Returns a paragraph containing information about the item.
         """
         paragraph = f"Item: {self.name}" + \
-            f"Target Position: {self.target_position}"
+                    f"Target Position: {self.target_position}"
 
         return paragraph
 
@@ -134,25 +134,6 @@ class Player:
         self.inventory = []
         self.points = 0
         self.victory = False
-
-    def pick_up(self, item: Item) -> str:
-        """Picks up an item and adds it to the player's inventory and prints out the successful pick up"""
-        self.inventory.append(item)
-        return "You have successfully picked up " + item.name
-
-    def move(self, d: str, world_map: Optional) -> str:
-        """Given a direction (N, S, W, E), update the player's location in that direction given the move is valid
-        TODO: World_map can't be entered with type world for some reason
-        """
-        direction = {'N': (0, -1), 'S': (0, 1), 'W': (-1, 0), 'E': (1, 0)}
-        new_x = self.x + direction[d][0]
-        new_y = self.x + direction[d][1]
-        if world_map.map[new_x, new_y] == -1:
-            return "Invalid, this square is unaccessible"
-        else:
-            self.x = new_x
-            self.y = new_y
-            return "TODO - Replace this with something"
 
 
 class World:
