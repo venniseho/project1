@@ -1,79 +1,79 @@
 Hallway
 0
-Short
-Long
+Halway Short
+Hallway Long
 END
 
 Room
 1
-Short
-Long
+Room Short
+Room Long
 END
 
 St. George Subway Station
 2
-Short
-Long
+St. George Subway Station Short
+St. George Subway Station Long
 END
 
 EJ Pratt
 3
-Short
-Long
+EJ Pratt Short
+EJ Pratt Long
 END
 
 University College
 4
-Short
-Long
+University College Short
+University College Long
 END
 
 Myhal
 5
-Short
-Long
+Myhal Short
+Myhal Long
 END
 
 Bahen Centre
 6
-Short
-Long
+Bahen Centre Short
+Bahen Centre Long
 END
 
 Convocation Hall
 7
-Short
-Long
+Convocation Hall Short
+Convocation Hall Long
 END
 
 King's College Circle
 8
-Short
-Long
+King's College Circle Short
+King's College Circle Long
 END
 
 Robarts Commons
 9
-Short
-Long
+Robarts Commons Short
+Robarts Commons Long
 END
 
 Robarts Library
 10
-Short
-Long
+Robarts Library Short
+Robarts Library Long
 END
 
 Chestnut
 11
-Short
-Long
+Chestnut Short
+Chestnut Long
 END
 
 Exam Centre
 12
-Short
-Long
+Exam Centre Short
+Exam Centre Long
 END
 
 Blocked
