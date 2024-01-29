@@ -1,4 +1,3 @@
-# The optimal solution to the game (least number of moves, max number of points)
 S
 S
 Examine
