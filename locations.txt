@@ -1,55 +1,80 @@
-Hallway
+Pathway
 0
-Halway Short
-Hallway Long
+You are along a pathway.
+You are along a pathway.
 END
 
 Room
 1
-Room Short
-Room Long
+You are in your room.
+Your room is locked. You need your keycard to enter.
+You are in your room. Your roommate doesn't seem to be home right now, but there's an open bottle of soda on their desk.
+On your bed near the window, your comforter lays rumpled and unmade; you had left early this morning in a panic,
+trying to find all your lost things.
 END
 
 St. George Subway Station
 2
-St. George Subway Station Short
-St. George Subway Station Long
+You are in St. George Subway Station. If you had your presto card you could take the 1-line down to the other end of
+campus.
+You are in St. George Subway Station. You hear a subway train arrive. There are many people around, rushing to get where
+they need to go. One of them is clearly a U of T student athlete, with a logo on their backpack and embroidered
+lettering that says 'hockey' on it. Over the barrier, you can see stairs leading towards the platforms. If you had your
+presto card you could take the 1-line down to the other end of campus.
 END
 
 EJ Pratt
 3
-EJ Pratt Short
-EJ Pratt Long
+You are on the first floor of EJ Pratt Library.Yesterday, there hadn't been any cubicles open, but today the library is
+nearly empty.
+You are on the first floor of EJ Pratt Library which is located on the Victoria University campus (which is 'affiliated'
+with U of T but not actually part of U of T. But Victoria College is part of U of T? It's confusing.) Yesterday, there
+hadn't been any cubicles open, so you had to study in the quiet zone, but today the library is nearly empty. Too bad you
+need to find your things and make your exam on time, this would've been an amazing time to study.
 END
 
 University College
 4
-University College Short
-University College Long
+You are in the main entryway of University College.
+You are in the main entryway of University College. The founding college of U of T, this college is so old that it even
+has its own ghost stories. University College is also a maze - you only know the way to your math tutorial classroom and
+back. Getting anywhere else means getting yourself very lost.
 END
 
 Myhal
 5
-Myhal Short
-Myhal Long
+You are on the first floor of Myhal. Yesterday, you attended a last-minute review session in MY102 for the exam you're
+taking today.
+You are on the first floor of Myhal Centre. You always seem to bump into your engineering friends in this building
+(probably because it's called Myhal Centre for ENGINEERING and Innovation), either studying on the 5th or 8th floors or
+on their way to class. This building is home to MY102, one of the nicest lecture halls you've ever had lecture in (there
+are outlets everywhere!). Yesterday, you attended a last-minute review session in MY102 for the exam you're taking
+today.
 END
 
 Bahen Centre
 6
-Bahen Centre Short
-Bahen Centre Long
+You are on the first floor of Bahen Centre. The Computer Science Student Union office is in this building.
+You are on the first floor of Bahen Centre. There's usually a good amount of people here, but today it's quiet. All the
+engineers and computer science students must be out studying in the library, at their dorms, taking their exams, or
+getting food. Come to think of it, the Computer Science Student Union office is on the second floor of this
+building, and they always have snacks for sale.
 END
 
 Convocation Hall
 7
-Convocation Hall Short
-Convocation Hall Long
+You are in Convocation Hall.
+You are in Convocation Hall, the largest lecture hall campus. First year introductory courses are usually held here, but
+there are no tables or outlets, and the seats are uncomfortable. Thankfully, you don't have any more classes for
+the year, so goodbye Convocation, until next year!
 END
 
 King's College Circle
 8
-King's College Circle Short
-King's College Circle Long
+You are at the bottom of King's College Circle.
+You are at the bottom of King's College Circle. Located in the centre of campus, King's College Circle is a really nice
+spot for a nap when it's sunny and warm in the spring. Usually, there are quite a few people hanging out in groups on
+the grass, but today, not so much (probably due to exams).
 END
 
 Robarts Commons
