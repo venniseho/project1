@@ -178,11 +178,13 @@ if __name__ == "__main__":
         check_victory(p, w, location)
 
     if p.victory:
+        print("You have successfully brought everything to the exam centre, and just in the nick of time too!")
+        print("Points: " + str(p.points))
         print("You win!")
     elif choice == 'quit':
         print("You have successfuly quit the game. Nothing was saved sorry.")
     else:
-        print("You lost.")
+        print("Unfortunately, time is up. Your exam has started and you have not reached the exam centre. You lost.")
 
         # TODO: CALL A FUNCTION HERE TO HANDLE WHAT HAPPENS UPON THE PLAYER'S CHOICE
         #  REMEMBER: the location = w.get_location(p.x, p.y) at the top of this loop will update the location if
