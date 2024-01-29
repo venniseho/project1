@@ -1,7 +1,7 @@
 1 12 10 Lucky Pen
 3 12 10 Cheat Sheet
 5 12 5 Transportation Card
-6 12 10 T Card
+6 12 10 T-Card
 11 2 5 Room Key
 6 6 5 Soda Can
 10 6 5 Granola Bar
