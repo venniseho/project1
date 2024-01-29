@@ -1,0 +1,32 @@
+N
+S
+S
+S
+Examine
+Pick Up: T-Card
+Pick-Up: Granola Bar
+S
+Examine
+E
+Examine
+Pick-Up: Soda Can
+E
+E
+N
+N
+E
+Examine
+E
+Examine
+E
+E
+S
+Examine
+N
+W
+S
+Examine
+Pick-Up: Room Key
+W
+N
+N
