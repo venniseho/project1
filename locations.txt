@@ -7,10 +7,9 @@ END
 Room
 1
 You are in your room.
-Your room is locked. You need your keycard to enter.
 You are in your room. Your roommate doesn't seem to be home right now, but there's an open bottle of soda on their desk.
-On your bed near the window, your comforter lays rumpled and unmade; you had left early this morning in a panic,
-trying to find all your lost things.
+On your bed near the window, your comforter lays rumpled and unmade, calling to you; you had left early this morning in
+a panic, trying to find all your lost things.
 END
 
 St. George Subway Station
@@ -79,26 +78,36 @@ END
 
 Robarts Commons
 9
-Robarts Commons Short
-Robarts Commons Long
+You are in Robarts Commons. There is a sign pointing to the East that says "Robarts Library".
+You are in Robarts Commons. Most students come here to study with their friends, especially during exam season. Usually,
+Robarts Commons is packed, but today there's just a few people around cramming in last-minute studying. You can even see
+someone napping (probably after pulling an all-nighter). There is a sign pointing to the East that says "Robarts
+Library".
 END
 
 Robarts Library
 10
-Robarts Library Short
-Robarts Library Long
+You are on the first floor of Robarts Library. There is a sign pointing to the West that says "Robarts Commons."
+You are on the first floor of Robarts Library. Students come here to study during exam season, especially because they
+can stay overnight. Usually, there's the sound of students entering and exiting the library, but today it is strangely
+silent. Above you, there is a sign pointing to the West, that says "Robarts Commons".
 END
 
-Chestnut
+Chestnut Residence
 11
-Chestnut Short
-Chestnut Long
+You are on the first floor of Chestnut Residence. You visited your friend here yesterday.
+You are on the first floor of Chestnut Residence. Yesterday, you visited one of your Life Science friends at their dorm
+here for a mental break from studying, and then to study some more (studying is better with company:)). From where you
+are, you can see the CN tower. University is hard, but at least the view is nice <3
 END
 
 Exam Centre
 12
-Exam Centre Short
-Exam Centre Long
+You are in the lobby of the Exam Centre. You can't take the exam unless you have your T-Card, lucky pen and cheat sheet.
+You are in the lobby of the Exam Centre, where you will take your exam. Although there is still time before the exam
+begins, there are already a lot of students milling around. You can see various emotions flickering across their faces:
+dread, anxiety, fear, confidence, and even... excitement? Some people are just built differently. You cannot start your
+exam until you have collected your T-Card, your lucky pen, and your cheat sheet, so hurry and go find them fast!
 END
 
 Blocked
