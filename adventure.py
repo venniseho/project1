@@ -34,6 +34,11 @@ def move(p: Player, d: str, w: World) -> None:
     if not is_valid_move(p, d, w):
         print("Invalid, this square is unaccessible")
         return
+
+    elif new_x == 0 and new_y == 0 and "Room Key" not in {item.name for item in p.inventory}:
+        print("Your room is locked. Your room key is not on you but you remember you left it at chestnut somewhere....")
+        return
+
     else:
         p.x = new_x
         p.y = new_y
@@ -64,13 +69,13 @@ def location_description(curr_location: Location, command: Optional[str] = None)
 def available_actions(curr_location: Location, item_data: dict[Any, list[Item]], player_inventory: list, p: Player,
                       w: World) \
         -> dict[str, list[str]]:
-    """
-    Returns a list of available actions at a specific location.
+    """Returns a list of available actions at a specific location.
     """
     directions = ['N', 'S', 'E', 'W']
+    usable = ['Granola Bar', 'Soda Can', 'Transportation Card']
     actions = {"move": [d for d in directions if is_valid_move(p, d, w)],
                "pick up": [item.name for item in curr_location.available_items(item_data)],
-               "use": [item.name for item in player_inventory if item.target_position == curr_location]}
+               "use": [item.name for item in player_inventory if item.name in usable]}
     actions = {action: actions[action] for action in actions if actions[action] != []}
 
     return actions
@@ -100,25 +105,42 @@ def player_action(choice: str, p: Player, w: World, l: Location) -> Any:
         for object in w.items[l.map_position]:
             if object.name == item:
                 p.inventory.append(object)
+                p.points += object.points
                 w.items[l.map_position].remove(object)
-            print("You have picked up " + item)
+                print("You have picked up " + item)
 
     elif choice == 'use':
-        # TODO: Add parameters for using items
         item = input("\nPick an item: ")
-        while item not in [item.name for item in p.inventory if item.target_position == l]:
+        usable = ['Granola Bar', 'Soda Can', 'Transportation Card']
+        while item not in [object.name for object in p.inventory if object.name in usable]:
             item = input("\nInvalid item. Pick an item: ")
-        for object in w.items[l]:
-            if object.name == item: p.inventory.remove(object)
-            print("You have used " + item)
-
+        for object in p.inventory:
+            if item == object.name:
+                item_object = object
+        if item == 'Granola Bar' or item == 'Soda Can':
+            p.points += 5
+            p.inventory.remove(item_object)
+            print("You have eaten food, 5 points added!")
+        elif item == "Transportation Card":
+            if l.map_position == 2:
+                p.x, p.y = 5, 4
+                p.inventory.remove(item_object)
+                print("You have taken the subway to the exam centre.")
+            else:
+                print("You must be at the Subway Station to use it, very close to your room actually....")
     return
+
+def check_victory(p: Player, w: World, l: Location) -> None:
+    """Checks to see if the player won the game"""
+    items = {item.name for item in p.inventory}
+    if "Cheat Sheet" in items and "Lucky Pen" in items and "T Card" in items and p.x == 5 and p.y == 4:
+        p.victory = True
 
 
 # Note: You may modify the code below as needed; the following starter template are just suggestions
 if __name__ == "__main__":
     w = World(open("map.txt"), open("locations.txt"), open("items.txt"))
-    p = Player(0, 0)  # set starting location of player; you may change the x, y coordinates here as appropriate
+    p = Player(0, 1)  # set starting location of player; you may change the x, y coordinates here as appropriate
     print("Insert initial plot")
     menu = ["look", "inventory", "score", "quit"]
     choice = 'move'
@@ -153,10 +175,14 @@ if __name__ == "__main__":
         else:
             player_action(choice, p, w, location)
 
+        check_victory(p, w, location)
+
     if p.victory:
         print("You win!")
+    elif choice == 'quit':
+        print("You have successfuly quit the game. Nothing was saved sorry.")
     else:
-        print("Bye")
+        print("You lost.")
 
         # TODO: CALL A FUNCTION HERE TO HANDLE WHAT HAPPENS UPON THE PLAYER'S CHOICE
         #  REMEMBER: the location = w.get_location(p.x, p.y) at the top of this loop will update the location if

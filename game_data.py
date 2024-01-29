@@ -97,7 +97,6 @@ class Location:
         else:
             return []
 
-
 class Player:
     """
     A Player in the text advanture game.
