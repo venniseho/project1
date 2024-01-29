@@ -76,21 +76,21 @@ spot for a nap when it's sunny and warm in the spring. Usually, there are quite 
 the grass, but today, not so much (probably due to exams).
 END
 
-Robarts Commons
-9
-You are in Robarts Commons. There is a sign pointing to the East that says "Robarts Library".
-You are in Robarts Commons. Most students come here to study with their friends, especially during exam season. Usually,
-Robarts Commons is packed, but today there's just a few people around cramming in last-minute studying. You can even see
-someone napping (probably after pulling an all-nighter). There is a sign pointing to the East that says "Robarts
-Library".
-END
-
 Robarts Library
-10
-You are on the first floor of Robarts Library. There is a sign pointing to the West that says "Robarts Commons."
+9
+You are on the first floor of Robarts Library. There is a sign pointing to the East that says "Robarts Commons."
 You are on the first floor of Robarts Library. Students come here to study during exam season, especially because they
 can stay overnight. Usually, there's the sound of students entering and exiting the library, but today it is strangely
-silent. Above you, there is a sign pointing to the West, that says "Robarts Commons".
+silent. Above you, there is a sign pointing to the East, that says "Robarts Commons".
+END
+
+Robarts Commons
+10
+You are in Robarts Commons. There is a sign pointing to the West that says "Robarts Library".
+You are in Robarts Commons. Most students come here to study with their friends, especially during exam season, because
+there aren't as many noise restrictions and you can eat there! Usually, Robarts Commons is packed, but today there's
+just a few people around cramming in last-minute studying. You can even see someone napping (probably after pulling an
+all-nighter). There is a sign pointing to the West that says "Robarts Library".
 END
 
 Chestnut Residence
