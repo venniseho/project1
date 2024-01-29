@@ -1,0 +1,47 @@
+# The optimal solution to the game (least number of moves, max number of points)
+S
+S
+Examine
+Pick Up: T-Card
+Pick Up: Can of Soda
+Inventory
+S
+E
+Examine
+Pick Up: Granola Bar
+Inventory
+Use: Granola Bar
+Inventory
+N
+E
+E
+E
+S
+Examine
+Pick Up: Room Key
+Inventory
+N
+N
+E
+Examine
+Pick Up: Transportation Card
+Inventory
+W
+N
+N
+E
+Examine
+Pick Up: Cheat Sheet
+Inventory
+W
+W
+W
+W
+W
+Examine
+Use: Room Key
+Pick Up: Lucky Pen
+Inventory
+E
+E
+Use: Transportation Card

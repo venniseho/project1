@@ -14,8 +14,7 @@ END
 
 St. George Subway Station
 2
-You are in St. George Subway Station. If you had your presto card you could take the 1-line down to the other end of
-campus.
+You are in St. George Subway Station. If you had your transport card you could take the subway.
 You are in St. George Subway Station. You hear a subway train arrive. There are many people around, rushing to get where
 they need to go. One of them is clearly a U of T student athlete, with a logo on their backpack and embroidered
 lettering that says 'hockey' on it. Over the barrier, you can see stairs leading towards the platforms. If you had your
