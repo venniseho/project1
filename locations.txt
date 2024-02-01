@@ -7,47 +7,45 @@ END
 Room
 1
 You are in your room.
-You are in your room. Your roommate doesn't seem to be home right now, but there's an open bottle of soda on their desk.
-On your bed near the window, your comforter lays rumpled and unmade, calling to you; you had left early this morning in
-a panic, trying to find all your lost things.
+You are in your room. Your roommate doesn't seem to be home right now, but there's an open bottle of soda on their
+desk. On your bed near the window, your comforter lays rumpled and unmade, calling to you; you had left early this
+morning in a panic, trying to find all your lost things.
 END
 
 St. George Subway Station
 2
 You are in St. George Subway Station. If you had your transport card you could take the subway.
-You are in St. George Subway Station. You hear a subway train arrive. There are many people around, rushing to get where
-they need to go. One of them is clearly a U of T student athlete, with a logo on their backpack and embroidered
+You are in St. George Subway Station. You hear a subway train arrive. There are many people around, rushing to get
+where they need to go. One of them is clearly a U of T student athlete, with a logo on their backpack and embroidered
 lettering that says 'hockey' on it. Over the barrier, you can see stairs leading towards the platforms. If you had your
 presto card you could take the 1-line down to the other end of campus.
 END
 
 EJ Pratt
 3
-You are on the first floor of EJ Pratt Library.Yesterday, there hadn't been any cubicles open, but today the library is
-nearly empty.
-You are on the first floor of EJ Pratt Library which is located on the Victoria University campus (which is 'affiliated'
-with U of T but not actually part of U of T. But Victoria College is part of U of T? It's confusing.) Yesterday, there
-hadn't been any cubicles open, so you had to study in the quiet zone, but today the library is nearly empty. Too bad you
-need to find your things and make your exam on time, this would've been an amazing time to study.
+You at EJ Pratt Library.Yesterday, there hadn't been any cubicles open, but today the library is nearly empty.
+You are on the first floor of EJ Pratt Library which is located on the Victoria University campus (which is
+'affiliated' with U of T but not actually part of U of T. But Victoria College is part of U of T? It's confusing.)
+Yesterday, there hadn't been any cubicles open, so you had to study in the quiet zone, but today the library is nearly
+empty. Too bad you need to find your things and make your exam on time, this would've been an amazing time to study.
 END
 
 University College
 4
 You are in the main entryway of University College.
 You are in the main entryway of University College. The founding college of U of T, this college is so old that it even
-has its own ghost stories. University College is also a maze - you only know the way to your math tutorial classroom and
-back. Getting anywhere else means getting yourself very lost.
+has its own ghost stories. University College is also a maze - you only know the way to your math tutorial classroom
+and back. Getting anywhere else means getting yourself very lost.
 END
 
 Myhal
 5
-You are on the first floor of Myhal. Yesterday, you attended a last-minute review session in MY102 for the exam you're
-taking today.
+You are on the first floor of Myhal. Yesterday, you attended a last-minute review session in MY150 for today's exam.
 You are on the first floor of Myhal Centre. You always seem to bump into your engineering friends in this building
 (probably because it's called Myhal Centre for ENGINEERING and Innovation), either studying on the 5th or 8th floors or
-on their way to class. This building is home to MY102, one of the nicest lecture halls you've ever had lecture in (there
-are outlets everywhere!). Yesterday, you attended a last-minute review session in MY102 for the exam you're taking
-today.
+on their way to class. This building is home to MY102, one of the nicest lecture halls you've ever had lecture in
+(there are outlets everywhere!). Yesterday, you attended a last-minute review session in MY102 for the exam you're
+taking today.
 END
 
 Bahen Centre
@@ -62,8 +60,8 @@ END
 Convocation Hall
 7
 You are in Convocation Hall.
-You are in Convocation Hall, the largest lecture hall campus. First year introductory courses are usually held here, but
-there are no tables or outlets, and the seats are uncomfortable. Thankfully, you don't have any more classes for
+You are in Convocation Hall, the largest lecture hall campus. First year introductory courses are usually held here,
+but there are no tables or outlets, and the seats are uncomfortable. Thankfully, you don't have any more classes for
 the year, so goodbye Convocation, until next year!
 END
 

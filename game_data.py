@@ -62,10 +62,11 @@ class Location:
     - map_position: an integer representing where the player is on the world map.
                     -1 represents inaccessible areas of the map.
                     0 represents locations the player can walk through but containing no actions.
-    - first_visit: True if this is the player's first time arriving at the location. False otherwise.
+    - name: the name of the item
     - long_desc: a long description of the location that prints if it is the player's first time visiting the location.
     - brief_desc: a brief description of the location that prints if the player has visited at least once before.
-    - items: a list of items at the location that the player may interact with.
+    - first_visit: True if this is the player's first time arriving at the location. False otherwise.
+    - examined: False if the player has not yet examined the location. True otherwise.
 
     Instance Attributes:
         - map_position: int
@@ -73,6 +74,7 @@ class Location:
         - brief_desc: str
         - long_desc: str
         - first_visit: bool
+        - examined: bool
 
     Representation Invariants:
         - map_position >= -1
@@ -86,11 +88,15 @@ class Location:
         self.brief_desc = brief_desc
         self.long_desc = long_desc
         self.first_visit = True
+        self.examined = False
 
-    def available_items(self, item_dict: dict[Any, list[Item]]) -> list[Item]:
+    def available_items(self, item_dict: dict[Any, list[Item]]) -> Optional[list[Item]]:
         """
         Returns a list of available items from item_dict at a particular location.
         """
+        if not self.examined:
+            return None
+
         if self.map_position in item_dict:
             return item_dict[self.map_position]
 
@@ -207,11 +213,16 @@ class World:
 
         while line != '':
             row = [line]
-
-            while line != 'END':
+            for i in range(2):
                 line = location_data.readline().strip()
                 row.append(line)
 
+            line = location_data.readline().strip()
+            description = ''
+            while line != 'END':
+                description += line + ' '
+                line = location_data.readline().strip()
+            row.append(description)
             locations.append(Location(int(row[1]), row[0], row[2], row[3]))
 
             line = location_data.readline().strip()

@@ -66,30 +66,26 @@ def location_description(curr_location: Location, command: Optional[str] = None)
         print(curr_location.brief_desc)
 
 
-def available_actions(curr_location: Location, item_data: dict[Any, list[Item]], player_inventory: list, p: Player,
-                      w: World) \
-        -> dict[str, list[str]]:
-    """Returns a list of available actions at a specific location.
-    """
-    directions = ['N', 'S', 'E', 'W']
-    usable = ['Granola Bar', 'Soda Can', 'Transportation Card']
-    actions = {"move": [d for d in directions if is_valid_move(p, d, w)],
-               "pick up": [item.name for item in curr_location.available_items(item_data)],
-               "use": [item.name for item in player_inventory if item.name in usable]}
-    actions = {action: actions[action] for action in actions if actions[action] != []}
-
-    return actions
-
-
-def player_action(choice: str, p: Player, w: World, l: Location) -> Any:
+def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict[Any, list[Item]]) -> Any:
     if choice == 'move':
+        directions = ['N', 'S', 'E', 'W']
+        print("\nValid directions: ", [d for d in directions if is_valid_move(p, d, w)])
         d = input("\nPick a direction: ")
-        while d not in ['N', 'S', 'E', 'W']:
+        while d not in directions:
             d = input("\n Invalid Input. Pick a direction: ")
         move(p, d, w)
 
     elif choice == 'look':
         location_description(l, 'look')
+
+    elif choice == 'examine':
+        l.examined = True
+        items = [item.name for item in l.available_items(item_data)]
+
+        if items != []:
+            print(items)
+        else:
+            print("No available items at this location.")
 
     elif choice == 'inventory':
         print([item.name for item in p.inventory])
@@ -98,16 +94,23 @@ def player_action(choice: str, p: Player, w: World, l: Location) -> Any:
         print("You have " + str(p.points) + " points.")
 
     elif choice == 'pick up':
-        print([object.name for object in w.items[l.map_position]])
-        item = input("\nPick an item: ")
-        while item not in [object.name for object in w.items[l.map_position]]:
-            item = input("\nInvalid item. Pick an item: ")
-        for object in w.items[l.map_position]:
-            if object.name == item:
-                p.inventory.append(object)
-                p.points += object.points
-                w.items[l.map_position].remove(object)
-                print("You have picked up " + item)
+
+        if l.examined:
+            print([object.name for object in w.items[l.map_position]])
+
+            item = input("\nPick an item: ")
+            while item not in [object.name for object in w.items[l.map_position]]:
+                item = input("\nInvalid item. Pick an item: ")
+
+            for object in w.items[l.map_position]:
+                if object.name == item:
+                    p.inventory.append(object)
+                    p.points += object.points
+                    w.items[l.map_position].remove(object)
+                    print("You have picked up " + item)
+
+        else:
+            print("You don't know what items are available because you have not examined this room yet. ")
 
     elif choice == 'use':
         item = input("\nPick an item: ")
@@ -143,37 +146,48 @@ if __name__ == "__main__":
     p = Player(0, 1)  # set starting location of player; you may change the x, y coordinates here as appropriate
     print("Insert initial plot")
     menu = ["look", "inventory", "score", "quit"]
+    available_actions = ["move", "examine", "pick up"]
     choice = 'move'
+    move_limit = 40
 
     while not p.victory:
         location = w.get_location(p.x, p.y)
+
         if choice == 'move':
             print(location_description(location))
             # Depending on whether it's been visited before,
             # print either full description (first time visit) or brief description (every subsequent visit)
             print("What to do? \n")
+
+        print("Moves left:", move_limit)
         print("[menu]")
-        for action in available_actions(location, w.items, p.inventory, p, w):
-            print(action, available_actions(location, w.items, p.inventory, p, w)[action])
+
+        for action in available_actions:
+            print(action)
         choice = input("\nEnter action: ")
 
-        while choice != "[menu]" and choice not in available_actions(location, w.items, p.inventory, p, w):
+        while choice != "[menu]" and choice not in available_actions:
             choice = input("\nInvalid. Choose action: ")
 
         if choice == "[menu]":
             print("Menu Options: \n")
             for option in menu:
                 print(option)
+
             choice = input("\nChoose action: ")
             while choice not in menu:
                 choice = input("\nInvalid. Choose action: ")
-            player_action(choice, p, w, location)
+
+            player_action(choice, p, w, location, w.items)
 
         elif choice == 'quit':
             break
 
         else:
-            player_action(choice, p, w, location)
+            player_action(choice, p, w, location, w.items)
+
+        if choice == "examine" or choice == "move":
+            move_limit -= 1
 
         check_victory(p, w, location)
 
@@ -181,10 +195,12 @@ if __name__ == "__main__":
         print("You have successfully brought everything to the exam centre, and just in the nick of time too!")
         print("Points: " + str(p.points))
         print("You win!")
+
+    elif move_limit <= 0:
+        print("Unfortunately, time is up. Your exam has started and you have not reached the exam centre. You lost.")
+
     elif choice == 'quit':
         print("You have successfuly quit the game. Nothing was saved sorry.")
-    else:
-        print("Unfortunately, time is up. Your exam has started and you have not reached the exam centre. You lost.")
 
         # TODO: CALL A FUNCTION HERE TO HANDLE WHAT HAPPENS UPON THE PLAYER'S CHOICE
         #  REMEMBER: the location = w.get_location(p.x, p.y) at the top of this loop will update the location if
