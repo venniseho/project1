@@ -83,6 +83,7 @@ def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict
         items = [item.name for item in l.available_items(item_data)]
 
         if items != []:
+            print("You search the whole area and have found something!")
             print(items)
         else:
             print("No available items at this location.")
@@ -113,8 +114,9 @@ def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict
             print("You don't know what items are available because you have not examined this room yet. ")
 
     elif choice == 'use':
-        item = input("\nPick an item: ")
         usable = ['Granola Bar', 'Soda Can', 'Transportation Card']
+        print([item.name for item in p.inventory if item.name in usable])
+        item = input("\nPick an item: ")
         while item not in [object.name for object in p.inventory if object.name in usable]:
             item = input("\nInvalid item. Pick an item: ")
         for object in p.inventory:
@@ -146,12 +148,20 @@ if __name__ == "__main__":
     p = Player(0, 1)  # set starting location of player; you may change the x, y coordinates here as appropriate
     print("Insert initial plot")
     menu = ["look", "inventory", "score", "quit"]
-    available_actions = ["move", "examine", "pick up"]
+
     choice = 'move'
     move_limit = 40
 
-    while not p.victory:
+    while not p.victory and move_limit > 0:
         location = w.get_location(p.x, p.y)
+        available_actions = ["move"]
+        if any(item.name for item in p.inventory if item.name in ['Granola Bar', 'Soda Can', 'Transportation Card']):
+            available_actions.append("use")
+
+        if location.examined and (location.map_position in w.items and w.items[location.map_position] != []):
+            available_actions.append("pick up")
+        else:
+            if not location.examined: available_actions.append("examine")
 
         if choice == 'move':
             print(location_description(location))
