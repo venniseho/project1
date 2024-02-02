@@ -21,6 +21,43 @@ This file is Copyright (c) 2024 CSC111 Teaching Team
 from typing import Any, Optional, TextIO
 
 
+class Player:
+    """
+    A Player in the text advanture game.
+    Functions:
+    - Move
+    - Pick up Items
+    - Use Items
+
+    Instance Attributes:
+        - x: int
+        - y: int
+        - inventory: list[Item]
+        - points: int
+        - victory: bool
+
+    Representation Invariants:
+        - 0 <= self.x <= 6
+        - 0 <= self.y <= 5
+        - self.points >= 0
+    """
+
+    def __init__(self, x: int, y: int) -> None:
+        """
+        Initializes a new Player at position (x, y).
+        """
+
+        # NOTES:
+        # This is a suggested starter class for Player.
+        # You may change these parameters and the data available for the Player object as you see fit.
+
+        self.x = x
+        self.y = y
+        self.inventory = []
+        self.points = 0
+        self.victory = False
+
+
 class Item:
     """An item in our text adventure game world.
 
@@ -103,41 +140,33 @@ class Location:
         else:
             return []
 
-class Player:
-    """
-    A Player in the text advanture game.
-    Functions:
-    - Move
-    - Pick up Items
-    - Use Items
+class Usable_Item(Item):
+    """Usable items in our game"""
 
-    Instance Attributes:
-        - x: int
-        - y: int
-        - inventory: list[Item]
-        - points: int
-        - victory: bool
-
-    Representation Invariants:
-        - 0 <= self.x <= 6
-        - 0 <= self.y <= 5
-        - self.points >= 0
-    """
-
-    def __init__(self, x: int, y: int) -> None:
-        """
-        Initializes a new Player at position (x, y).
+    def __init__(self, name: str, start: int, target: int, target_points: int, food: bool) -> None:
+        """Initialize a new usable item with the is_food attribute.
         """
 
-        # NOTES:
-        # This is a suggested starter class for Player.
-        # You may change these parameters and the data available for the Player object as you see fit.
+        self.name = name
+        self.start_position = start
+        self.target_position = target
+        self.points = target_points
+        self.is_food = food
 
-        self.x = x
-        self.y = y
-        self.inventory = []
-        self.points = 0
-        self.victory = False
+
+    def use_item(self, p: Player, l: Location) -> None:
+        """Use the item by removing it form the player's inventory and modifying the player's points/location"""
+        if self.is_food:
+            p.points += 5
+            p.inventory.remove(self)
+            print("You have eaten food, 5 points added!")
+        elif self.name == 'Transportation Card':
+            if l.map_position == 2:
+                p.x, p.y = 5, 4
+                p.inventory.remove(self)
+                print("You have taken the subway to the exam centre.")
+            else:
+                print("You must be at the Subway Station to use it, very close to your room actually....")
 
 
 class World:
@@ -241,8 +270,12 @@ class World:
         while line != '':
             line = line.split(' ')
             line[3] += ' ' + line.pop(4)
-
-            item = Item(line[3], int(line[0]), int(line[1]), int(line[2]))
+            if line[3] not in ['Lucky Pen', 'Transportation Card', 'Cheat Sheet', 'T Card', 'Room Key']:
+                item = Usable_Item(line[3], int(line[0]), int(line[1]), int(line[2]), True)
+            elif line[3] == 'Transportation Card':
+                item = Usable_Item(line[3], int(line[0]), int(line[1]), int(line[2]), False)
+            else:
+                item = Item(line[3], int(line[0]), int(line[1]), int(line[2]))
 
             if item.start_position not in items:
                 items[item.start_position] = [item]

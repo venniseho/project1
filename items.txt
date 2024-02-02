@@ -5,3 +5,6 @@
 11 2 5 Room Key
 6 6 5 Soda Can
 10 6 5 Granola Bar
+7 6 5 Chip Bag
+8 6 5 Yogurt Cup
+3 6 5 Water Bottle

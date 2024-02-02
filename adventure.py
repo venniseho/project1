@@ -19,7 +19,7 @@ This file is Copyright (c) 2024 CSC111 Teaching Team
 """
 
 # Note: You may add in other import statements here as needed
-from game_data import World, Item, Location, Player
+from game_data import World, Item, Location, Player, Usable_Item
 from typing import Optional, Any
 
 
@@ -114,25 +114,13 @@ def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict
             print("You don't know what items are available because you have not examined this room yet. ")
 
     elif choice == 'use':
-        usable = ['Granola Bar', 'Soda Can', 'Transportation Card']
-        print([item.name for item in p.inventory if item.name in usable])
+        print([item.name for item in p.inventory if isinstance(item, Usable_Item)])
         item = input("\nPick an item: ")
-        while item not in [object.name for object in p.inventory if object.name in usable]:
+        while item not in [item.name for item in p.inventory if isinstance(item, Usable_Item)]:
             item = input("\nInvalid item. Pick an item: ")
         for object in p.inventory:
-            if item == object.name:
-                item_object = object
-        if item == 'Granola Bar' or item == 'Soda Can':
-            p.points += 5
-            p.inventory.remove(item_object)
-            print("You have eaten food, 5 points added!")
-        elif item == "Transportation Card":
-            if l.map_position == 2:
-                p.x, p.y = 5, 4
-                p.inventory.remove(item_object)
-                print("You have taken the subway to the exam centre.")
-            else:
-                print("You must be at the Subway Station to use it, very close to your room actually....")
+            if item == object.name: item_object = object
+        item_object.use_item(p, l)
     return
 
 def check_victory(p: Player, w: World, l: Location) -> None:
@@ -155,7 +143,7 @@ if __name__ == "__main__":
     while not p.victory and move_limit > 0:
         location = w.get_location(p.x, p.y)
         available_actions = ["move"]
-        if any(item.name for item in p.inventory if item.name in ['Granola Bar', 'Soda Can', 'Transportation Card']):
+        if any(item.name for item in p.inventory if isinstance(item, Usable_Item)):
             available_actions.append("use")
 
         if location.examined and (location.map_position in w.items and w.items[location.map_position] != []):
