@@ -35,11 +35,13 @@ class Player:
         - inventory: list[Item]
         - points: int
         - victory: bool
+        - food: int
 
     Representation Invariants:
         - 0 <= self.x <= 6
         - 0 <= self.y <= 5
         - self.points >= 0
+        - food >= 0
     """
 
     def __init__(self, x: int, y: int) -> None:
@@ -56,6 +58,7 @@ class Player:
         self.inventory = []
         self.points = 0
         self.victory = False
+        self.food = 0
 
 
 class Item:
@@ -158,6 +161,7 @@ class Usable_Item(Item):
         """Use the item by removing it form the player's inventory and modifying the player's points/location"""
         if self.is_food:
             p.points += 5
+            p.food += 1
             p.inventory.remove(self)
             print("You have eaten food, 5 points added!")
         elif self.name == 'Transportation Card':

@@ -8,3 +8,5 @@
 7 6 5 Chip Bag
 8 6 5 Yogurt Cup
 3 6 5 Water Bottle
+7 6 5 Milk Carton
+10 6 5 Chocolate Cookie
