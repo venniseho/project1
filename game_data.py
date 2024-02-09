@@ -105,22 +105,22 @@ class Location:
     - name: the name of the item
     - long_desc: a long description of the location that prints if it is the player's first time visiting the location.
     - brief_desc: a brief description of the location that prints if the player has visited at least once before.
-    - first_visit: True if this is the player's first time arriving at the location. False otherwise.
+    - first_visit: True if the player has not yet visited the location. False otherwise.
     - examined: False if the player has not yet examined the location. True otherwise.
 
     Instance Attributes:
-        - map_position: int
-        - name: str
-        - brief_desc: str
-        - long_desc: str
-        - first_visit: bool
-        - examined: bool
+    - map_position: int
+    - name: str
+    - brief_desc: str
+    - long_desc: str
+    - first_visit: bool
+    - examined: bool
 
     Representation Invariants:
-        - map_position >= -1
+    - map_position >= -1
     """
 
-    def __init__(self, map_position, name, brief_desc, long_desc) -> None:
+    def __init__(self, map_position: int, name: str, brief_desc: str, long_desc: str) -> None:
         """Initialize a new location.
         """
         self.map_position = map_position
@@ -143,13 +143,44 @@ class Location:
         else:
             return []
 
+
+class BlockedOrHallway(Location):
+    """
+    'Blocked' and 'Hallway' are special Locations that the player can enocunter.
+    Unlike named Locations, there can be multiple instances of 'Blocked' and 'Hallway' in the world map.
+
+    It has the updated attributes:
+    - map_position: always equal to 0 or -1
+    - first_visit: a dictionary mapping (x, y) coordinates to whether or not the location has been visited before (bool)
+
+    Representation invariants:
+    - self.map_position == 0 or self.map_position == -1
+    """
+    def __init__(self, map_position: int, name: str, brief_desc: str, long_desc: str) -> None:
+        """Initialize a new hallway or blocked area.
+        """
+        super().__init__(map_position, name, brief_desc, long_desc)
+
+        self.first_visit = {}
+
+    def first_visit_dict(self, map_data: list[list[int]]) -> None:
+        """
+        Sets the (x, y) coordinates of blocked or hallway areas and sets their corresponding value to True (because
+        the player has not yet visited the location).
+        """
+        for y in range(len(map_data)):
+            for x in range(len(map_data[0])):
+                if map_data[y][x] == self.map_position:
+                    self.first_visit[(x, y)] = True
+
+
 class Usable_Item(Item):
     """Usable items in our game"""
 
     def __init__(self, name: str, start: int, target: int, target_points: int, food: bool) -> None:
         """Initialize a new usable item with the is_food attribute.
         """
-
+        super().__init__(name, start, target, target_points)
         self.name = name
         self.start_position = start
         self.target_position = target
@@ -236,10 +267,10 @@ class World:
         return map
 
     def load_locations(self, location_data: TextIO) -> list[Location]:
-        """Store locations from open file location_data as a nested list.
-        Location list is structured such that each index corresponds to the location number. E.g. Hallway is location
-        0 so can be accessed by indexing the list at 0. Null space is -1 so can be accessed by indexing list at -1.
-        List is in the form [Name, Position, Short, Long]
+        """Store locations from open file location_data as a list of Location class items.
+        The list is structured such that each index corresponds to the location number.
+        E.g. Hallway is location 0 so can be accessed by indexing the list at 0.
+             Null space is -1 so can be accessed by indexing list at -1.
         """
         locations = []
         line = location_data.readline().strip()
@@ -256,7 +287,11 @@ class World:
                 description += line + ' '
                 line = location_data.readline().strip()
             row.append(description)
-            locations.append(Location(int(row[1]), row[0], row[2], row[3]))
+
+            if int(row[1]) == 0 or int(row[1]) == -1:
+                locations.append(BlockedOrHallway(int(row[1]), row[0], row[2], row[3]))
+            else:
+                locations.append(Location(int(row[1]), row[0], row[2], row[3]))
 
             line = location_data.readline().strip()
             line = location_data.readline().strip()

@@ -19,7 +19,7 @@ This file is Copyright (c) 2024 CSC111 Teaching Team
 """
 
 # Note: You may add in other import statements here as needed
-from game_data import World, Item, Location, Player, Usable_Item
+from game_data import BlockedOrHallway, World, Item, Location, Player, Usable_Item
 from typing import Optional, Any
 import random
 
@@ -136,11 +136,16 @@ def initiate_fight(p: Player, l: Location, item_data: dict[Any, list[Item]]) -> 
             print("No available items at this location.")
 
 
-def location_description(curr_location: Location, command: Optional[str] = None) -> None:
+def location_description(p: Player, curr_location: Location, command: Optional[str] = None) -> None:
     """
     Prints out the location_description of a particular location
     """
-    if curr_location.first_visit or command == "look":
+    if isinstance(curr_location, BlockedOrHallway):
+        if curr_location.first_visit[(p.x, p.y)] or command == "look":
+            print(curr_location.long_desc)
+            curr_location.first_visit[(p.x, p.y)] = False
+
+    elif curr_location.first_visit or command == "look":
         print(curr_location.long_desc)
         curr_location.first_visit = False
 
@@ -148,17 +153,66 @@ def location_description(curr_location: Location, command: Optional[str] = None)
         print(curr_location.brief_desc)
 
 
+def show_map(map_data: list[list[int]], location_data: list[Location]) -> None:
+    """
+    Prints the map_data as a grid in the console with a corresponding legend.
+    If the player has not visited a location before, the location will show up as '?'.
+    Otherwise, the location will show up as an integer.
+    """
+    new_map = []
+    known_locations = set()
+
+    # iterate through the map rows
+    for y in range(len(map_data)):
+        map_row = []
+
+        # iterate through each item in the row
+        for x in range(len(map_data[0])):
+            location_num = map_data[y][x]
+
+            # if it's a hallway or blocked area, check the first_visit attribute
+            # (True if the player has not visited before)
+            if (location_num == 0 or location_num == -1) and location_data[location_num].first_visit[(x, y)]:
+                map_row.append('?')
+
+            # otherwise, just check the first_visit attribute
+            elif location_data[location_num].first_visit is True:
+                map_row.append('?')
+
+            else:
+                map_row.append(location_num)
+                known_locations.add(location_num)
+
+        new_map.append(map_row)
+
+    # print the map grid in a visually pleasing manner
+    for row in new_map:
+        grid_row = f"   "
+        for item in row:
+            grid_row += f"{str(item) + " ": ^3}"
+
+        print(grid_row)
+
+    # print the legend for the map location names
+    legend = [f"{location_data[i].map_position} - {location_data[i].name}" for i in known_locations]
+    print()
+    for i in legend:
+        print(i)
+
+
 def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict[Any, list[Item]]) -> Any:
+
     if choice == 'move':
         directions = ['N', 'S', 'E', 'W']
         print("\nValid directions: ", [d for d in directions if is_valid_move(p, d, w)])
         d = input("\nPick a direction: ")
+
         while d not in directions:
             d = input("\n Invalid Input. Pick a direction: ")
         move(p, d, w)
 
     elif choice == 'look':
-        location_description(l, 'look')
+        location_description(p, l, 'look')
 
     elif choice == 'examine':
         if l.map_position != 11:
@@ -188,6 +242,9 @@ def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict
                 initiate_fight(p, l, item_data)
 
 
+
+    elif choice == 'map':
+        show_map(w.map, w.locations)
 
     elif choice == 'inventory':
         print([item.name for item in p.inventory])
@@ -236,15 +293,22 @@ def check_victory(p: Player, w: World, l: Location) -> None:
 if __name__ == "__main__":
     w = World(open("map.txt"), open("locations.txt"), open("items.txt"))
     p = Player(0, 1)  # set starting location of player; you may change the x, y coordinates here as appropriate
+
+    # setting first_visit attribute for blocked/hallway locations
+    w.locations[0].first_visit_dict(w.map)
+    w.locations[-1].first_visit_dict(w.map)
+
     print("Insert initial plot")
-    menu = ["look", "inventory", "score", "quit"]
+    menu = ["look", "map", "inventory", "score", "quit"]
 
     choice = 'move'
     move_limit = 40
 
     while not p.victory and move_limit > 0:
+
         location = w.get_location(p.x, p.y)
         available_actions = ["move"]
+
         if any(item.name for item in p.inventory if isinstance(item, Usable_Item)):
             available_actions.append("use")
 
