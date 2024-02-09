@@ -65,8 +65,8 @@ def initiate_fight(p: Player, l: Location, item_data: dict[Any, list[Item]]) -> 
     print("You have three moves: attack, heal, and special")
     print("Your attacks scale proprotionally to the amount of food you ate")
     print("Heal grants 10 HP but can only be used once every 3 turns")
-    print(
-        "Your special is a burn, thanks to your trusty pocket flamethrower. You can use it after you attacks 3 times and it deals massive damage and leaves your opponent burned for the remainder of the battle.")
+    print("Your special is a burn, thanks to your trusty pocket flamethrower. You can use it after you attacks 3 times "
+          "and it deals massive damage and leaves your opponent burned for the remainder of the battle.")
     print("Your opponent has not special but can heal 10 HP every two turns")
     special = 3
     heal = 0
