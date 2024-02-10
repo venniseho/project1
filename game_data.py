@@ -210,6 +210,21 @@ class BlockedOrHallway(Location):
         For the first_visit attribute and the examined attribute:
         Sets the (x, y) coordinates of blocked or hallway areas and sets first_visit to True (because the player has
         not yet visited the location) and sets examined to Fales (because the player has not examined the location yet).
+
+        >>> map_list = [[-1, 0, -1], [4, -1, 0]]
+        >>> hallway = BlockedOrHallway(0, 'hallway', 'brief', 'longggggg')
+        >>> hallway.init_fv_examine(map_list)
+        >>> hallway.first_visit == {(1, 0): True, (2, 1): True}
+        True
+        >>> hallway.examined == {(1, 0): False, (2, 1): False}
+        True
+
+        >>> blocked = BlockedOrHallway(-1, 'blocked', 'brief', 'longggggg')
+        >>> blocked.init_fv_examine(map_list)
+        >>> blocked.first_visit == {(0, 0): True, (2, 0): True, (1, 1): True}
+        True
+        >>> blocked.examined == {(0, 0): False, (2, 0): False, (1, 1): False}
+        True
         """
         for y in range(len(map_data)):
             for x in range(len(map_data[0])):
