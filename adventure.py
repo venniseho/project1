@@ -26,7 +26,10 @@ from dordle import play_dordle
 
 
 def move(p: Player, d: str, w: World) -> None:
-    """Given a direction (N, S, W, E), update the player's location in that direction given the move is valid
+    """Given a direction (N, S, W, E), check if the move is valid and if it is,
+    mutate the player's location in that direction
+    Preconditions:
+        - d in ['N', 'S', 'W', 'E']
     """
     direction = {'N': (0, -1), 'S': (0, 1), 'W': (-1, 0), 'E': (1, 0)}
     new_x = p.x + direction[d][0]
@@ -42,12 +45,16 @@ def move(p: Player, d: str, w: World) -> None:
     else:
         p.x = new_x
         p.y = new_y
-        print("You have moved to" + "(" + str(p.x) + ", " + str(p.y) + ")")
+        print("You have moved to " + "(" + str(p.x) + ", " + str(p.y) + ")")
         return
 
 
 def is_valid_move(p: Player, d: str, w: World) -> bool:
-    """Given a direction verify if the move is valid"""
+    """Given a direction verify if the move is valid (ie the move does not cause the player to
+    go off the edge of the map or into a blocked region.
+    Preconditions:
+        - d in ['N', 'S', 'W', 'E']
+    """
     direction = {'N': (0, -1), 'S': (0, 1), 'W': (-1, 0), 'E': (1, 0)}
     new_x = p.x + direction[d][0]
     new_y = p.y + direction[d][1]
@@ -55,8 +62,7 @@ def is_valid_move(p: Player, d: str, w: World) -> bool:
 
 
 def print_long_description(curr_location: Location) -> None:
-    """
-    Helper function to location_description.
+    """Helper function to location_description.
     Prints out the long_desc of a particular location in a (mostly) aesthetically pleasing manner.
     """
     line_count = (len(curr_location.long_desc) // 75) + 1
@@ -68,10 +74,9 @@ def print_long_description(curr_location: Location) -> None:
 
 
 def location_description(p: Player, curr_location: Location, command: Optional[str] = None) -> None:
+    """Prints out the location number and location_description of a particular location
     """
-    Prints out the location_description of a particular location
-    """
-
+    print("Location " + str(curr_location.map_position))
     if isinstance(curr_location, BlockedOrHallway):
         if (curr_location.first_visit[(p.x, p.y)]) or (command == "look"):
             print_long_description(curr_location)
@@ -88,8 +93,7 @@ def location_description(p: Player, curr_location: Location, command: Optional[s
 
 
 def show_map(map_data: list[list[int]], location_data: list[Location]) -> None:
-    """
-    Prints the map_data as a grid in the console with a corresponding legend.
+    """Prints the map_data as a grid in the console with a corresponding legend.
     If the player has not visited a location before, the location will show up as '?'.
     Otherwise, the location will show up as an integer.
     """
@@ -139,8 +143,7 @@ def show_map(map_data: list[list[int]], location_data: list[Location]) -> None:
 
 
 def gameplay(p: Player, curr_location: Location, item_data: dict[Any, list[Item]]) -> None:
-    """
-    Initiates gameplay for our two minigames: Fight and Dordle
+    """Initiates gameplay for our two minigames: Fight and Dordle
 
     Preconditions:
     - location.map_position == 3 or location.map_position == 11
@@ -160,6 +163,7 @@ def gameplay(p: Player, curr_location: Location, item_data: dict[Any, list[Item]
             print("You try to throw a punch, but unfortunately you're too weak and get pummeled instantly.")
             print("You walk away, thinking that you may have a chance if you actually had breakfast this morning....")
         else:
+            p.move_limit -= 1
             initiate_fight(p, curr_location, item_data)
 
     # DORDLE
@@ -176,6 +180,7 @@ def gameplay(p: Player, curr_location: Location, item_data: dict[Any, list[Item]
             dordle = input("Do you take the challenge? (Yes or No): ").upper()
 
         if dordle == "YES":
+            p.move_limit -= 1
             play_dordle(curr_location)
 
         else:
@@ -184,7 +189,8 @@ def gameplay(p: Player, curr_location: Location, item_data: dict[Any, list[Item]
 
 
 def pick_up(p: Player, w: World, curr_location: Location) -> None:
-    """Allows player to pick up item"""
+    """Mutate the player's inventory and location available items to add an item to inventory
+    and remove it from the location"""
     if curr_location.examined:
         print([location_item.name for location_item in w.items[curr_location.map_position]])
 
@@ -206,7 +212,10 @@ def pick_up(p: Player, w: World, curr_location: Location) -> None:
 
 
 def examine(p: Player, curr_location: Location, item_data: dict[Any, list[Item]]) -> None:
-    """Allow player to examine the location to find possible items"""
+    """Allows player to examine the location and change location.examined True so the player cannot examine again.
+    If items are available, print the available items at the location.
+    If a minigame is found, indicate this.
+    """
     if isinstance(curr_location, BlockedOrHallway):
         if not curr_location.examined[(p.x, p.y)]:
             curr_location.examined[(p.x, p.y)] = True
@@ -227,7 +236,7 @@ def examine(p: Player, curr_location: Location, item_data: dict[Any, list[Item]]
 
 
 def use(p: Player, curr_location: Location) -> None:
-    """Allow player to use a usable item"""
+    """Get an item from the user and uses the item by calling the use_item function on it"""
     print([player_item.name for player_item in p.inventory if isinstance(player_item, UsableItem)])
     item = input("\nPick an item: ")
     while item not in [player_item.name for player_item in p.inventory if isinstance(player_item, UsableItem)]:
@@ -240,8 +249,12 @@ def use(p: Player, curr_location: Location) -> None:
 
 def player_action(player_choice: str, p: Player, w: World,
                   curr_location: Location, item_data: dict[Any, list[Item]]) -> None:
-    """Takes a player's choice and based on it, performs a specific action (e.g. move input will mutate player
-    and move them)."""
+    """Takes a player's choice and based on it, performs a specific action (e.g. move input will move player, use will
+    use an item, etc.).
+    Preconditions:
+        - player_choice in ['move', 'look', 'examine', 'inventory', 'score', 'pick up', 'use']
+    """
+
     if player_choice == 'move':
         directions = ['N', 'S', 'E', 'W']
         print("\nValid directions: ", [direction for direction in directions if is_valid_move(p, direction, w)])
@@ -278,7 +291,8 @@ def player_action(player_choice: str, p: Player, w: World,
 
 
 def check_victory(p: Player) -> None:
-    """Checks to see if the player won the game"""
+    """Checks to see if the player won the game by checking if the player is at the exam centre with all the
+    required items (Cheat Sheet, Lucky Pen, T Card)"""
     items = {item.name for item in p.inventory}
     if "Cheat Sheet" in items and "Lucky Pen" in items and "T Card" in items and p.x == 5 and p.y == 4:
         p.victory = True
@@ -297,9 +311,23 @@ if __name__ == "__main__":
     menu = ["look", "map", "inventory", "score", "quit"]
 
     choice = 'move'
-    move_limit = 40
 
-    while not player.victory and move_limit > 0:
+    print("You've got an important exam coming up this evening, and you've been studying for weeks. "
+          "Unfortunately, when you woke up this morning, you were missing some important exam-related items. "
+          "You cannot find your T-card, and you're nervous they won't let you into tonight's exam without it. "
+          "Also, you seem to have misplaced your lucky exam pen -- even if they let you in, you can't possibly "
+          "write with another pen! Finally, your instructor for the course lets you bring a cheat sheet - a "
+          "handwritten page of information in the exam. Last night, you painstakingly crammed as much material "
+          "onto a single page as humanly possible, but that's missing, too! All of this stuff must be around campus "
+          "somewhere! Can you find all of it before your exam starts tonight?")
+    print()
+    print("Here are the rules for your adventure:"
+          "You can freely move around the map (in the available space, of course) and examine any location you choose."
+          "But beware - You don't have much time and examining and moving costs 1 move! (You only have 35 total!)"
+          "Throughout the game, you'll get to pick up items and use them along your journey."
+          "Items may give you points, or unique abilities that can be used later on.")
+
+    while not player.victory and player.move_limit > 0:
 
         location = world.get_location(player.x, player.y)
         available_actions = ["move"]
@@ -315,8 +343,9 @@ if __name__ == "__main__":
                     or not location.examined):
                 available_actions.append("examine")
 
+        print("Moves left:", player.move_limit, "\n")
+
         if choice == 'move':
-            print("Moves left:", move_limit, "\n")
             location_description(player, location)
             print("\nWhat to do? ")
             location_description(player, location)
@@ -348,7 +377,7 @@ if __name__ == "__main__":
         player_action(choice, player, world, location, world.items)
 
         if choice in ["examine", "move"]:
-            move_limit -= 1
+            player.move_limit -= 1
 
         check_victory(player)
 
@@ -357,7 +386,7 @@ if __name__ == "__main__":
         print("Points: " + str(player.points))
         print("You win!")
 
-    elif move_limit <= 0:
+    elif player.move_limit <= 0:
         print("Unfortunately, time is up. Your exam has started and you have not reached the exam centre. You lost.")
 
     elif choice == 'quit':

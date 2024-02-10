@@ -69,8 +69,6 @@ pick up
 Transportation Card
 [menu]
 inventory
-[menu]
-score
 move
 E
 move
