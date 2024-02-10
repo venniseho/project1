@@ -152,6 +152,7 @@ class BlockedOrHallway(Location):
     It has the updated attributes:
     - map_position: always equal to 0 or -1
     - first_visit: a dictionary mapping (x, y) coordinates to whether or not the location has been visited before (bool)
+    - examined: a dictionary mapping (x, y) coordinates to whether or not the location has been examined before (bool)
 
     Representation invariants:
     - self.map_position == 0 or self.map_position == -1
@@ -160,18 +161,21 @@ class BlockedOrHallway(Location):
         """Initialize a new hallway or blocked area.
         """
         super().__init__(map_position, name, brief_desc, long_desc)
-
         self.first_visit = {}
+        self.examined = {}
 
-    def first_visit_dict(self, map_data: list[list[int]]) -> None:
+    def init_fv_examine(self, map_data: list[list[int]]) -> None:
         """
-        Sets the (x, y) coordinates of blocked or hallway areas and sets their corresponding value to True (because
-        the player has not yet visited the location).
+        For the first_visit attribute and the examined attribute:
+        Sets the (x, y) coordinates of blocked or hallway areas and sets first_visit to True (because the player has
+        not yet visited the location) and sets examined to Fales (because the player has not examined the location yet).
+
         """
         for y in range(len(map_data)):
             for x in range(len(map_data[0])):
                 if map_data[y][x] == self.map_position:
                     self.first_visit[(x, y)] = True
+                    self.examined[(x, y)] = False
 
 
 class Usable_Item(Item):

@@ -21,10 +21,9 @@ This file is Copyright (c) 2024 CSC111 Teaching Team
 # Note: You may add in other import statements here as needed
 from game_data import BlockedOrHallway, World, Item, Location, Player, Usable_Item
 from fight import initiate_fight
+from dordle import play_dordle
 from typing import Optional, Any
 
-
-# Note: You may add helper functions, classes, etc. here as needed
 
 def move(p: Player, d: str, w: World) -> None:
     """Given a direction (N, S, W, E), update the player's location in that direction given the move is valid
@@ -55,17 +54,33 @@ def is_valid_move(p: Player, d: str, w: World) -> bool:
     return 0 <= new_x <= 5 and 0 <= new_y <= 4 and w.map[new_y][new_x] != -1
 
 
+def print_long_description(curr_location: Location) -> None:
+    """
+    Helper function to location_description.
+    Prints out the long_desc of a particular location in a (mostly) aesthetically pleasing manner.
+    """
+    line_count = (len(curr_location.long_desc) // 75) + 1
+    for i in range(line_count):
+        line = curr_location.long_desc[75 * i:75 * (i + 1)]
+        print(line)
+    line = curr_location.long_desc[75 * (line_count + 1):]
+    print(line)
+
+
 def location_description(p: Player, curr_location: Location, command: Optional[str] = None) -> None:
     """
     Prints out the location_description of a particular location
     """
+
     if isinstance(curr_location, BlockedOrHallway):
-        if curr_location.first_visit[(p.x, p.y)] or command == "look":
-            print(curr_location.long_desc)
+        if (curr_location.first_visit[(p.x, p.y)]) or (command == "look"):
+            print_long_description(curr_location)
             curr_location.first_visit[(p.x, p.y)] = False
+        else:
+            print(curr_location.brief_desc)
 
     elif curr_location.first_visit or command == "look":
-        print(curr_location.long_desc)
+        print_long_description(curr_location)
         curr_location.first_visit = False
 
     else:
@@ -119,7 +134,52 @@ def show_map(map_data: list[list[int]], location_data: list[Location]) -> None:
         print(i)
 
 
-def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict[Any, list[Item]]) -> Any:
+def gameplay(p: Player, l: Location, item_data: dict[Any, list[Item]]) -> None:
+    """
+    Initiates gameplay for our two minigames: Fight and Dordle
+
+    Preconditions:
+    - l.map_position == 3 or l.map_position == 11
+    """
+    # FIGHT
+    if l.map_position == 11:
+        print("After searching the grounds of chestnut, you see your friend with your room key.")
+        print("Unfortunately for you, they're still mad about...something. You're not quite sure what you did.")
+        print("All you know is you're not getting that room key without a fight!")
+        fight = input("Do you run or fight? (Fighting takes time so you lose a move fyi)")
+        while fight != 'run' and fight != 'fight':
+            print("Invalid input.")
+            fight = input("Do you run or fight? (Fighting takes time so you lose a move fyi)")
+        if fight == 'run':
+            print("You ran away like a coward but hey at least you're not beat up!")
+        elif p.food < 3:
+            print("You try to throw a punch, but unfortunately you're too weak and get pummeled instantly.")
+            print("You walk away, thinking that you may have a chance if you actually had breakfast this morning....")
+        else:
+            initiate_fight(p, l, item_data)
+
+    # DORDLE
+    elif l.map_position == 3:
+        print("After searching every floor of EJ Pratt, you realise that someone else in the library has"
+              " your cheat sheet!")
+        print("They challenge you to a game of dordle for the rights to the cheat sheet (even though it literally"
+              "has your name on it...).")
+        print("Taking the challenge will cost you one move.")
+
+        dordle = input("Do you take the challenge? (Yes or No): ").upper()
+        while dordle != 'YES' and dordle != 'NO':
+            print("Invalid input.")
+            dordle = input("Do you take the challenge? (Yes or No): ").upper()
+
+        if dordle == "YES":
+            play_dordle(l)
+
+        else:
+            print("You do not take the challenge. Maybe you have time to just rewrite the cheat sheet? "
+                  "(you do not and you very much need that cheat sheet)")
+
+
+def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict[Any, list[Item]]) -> None:
 
     if choice == 'move':
         directions = ['N', 'S', 'E', 'W']
@@ -134,39 +194,33 @@ def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict
         location_description(p, l, 'look')
 
     elif choice == 'examine':
-        if l.map_position != 11:
+        if isinstance(l, BlockedOrHallway):
+            if not l.examined[(p.x, p.y)]:
+                l.examined[(p.x, p.y)] = True
+            print("No available items at this location.")
+
+        elif l.map_position == 3 or l.map_position == 11:
+            print("You have found a minigame!")
+            gameplay(p, l, item_data)
+
+        else:
             l.examined = True
             items = [item.name for item in l.available_items(item_data)]
-            if items != []:
+            if items:
                 print("You search the whole area and have found something!")
                 print(items)
             else:
                 print("No available items at this location.")
-        else:
-            print("After searching the grounds of chestnut, you see your friend with your room key.")
-            print(
-                "Unfortunately for you, their still mad about...something, you're actually not quite sure what you did.")
-            print("All you know is you're not getting that room key without a fight!")
-            fight = input("Do you run or fight? (Fighting takes time so you lose a move fyi)")
-            while fight != 'run' and fight != 'fight':
-                print("Invalid input.")
-                fight = input("Do you run or fight? (Fighting takes time so you lose a move fyi)")
-            if fight == 'run':
-                print("You ran away like a coward but hey at least you're not beat up!")
-            elif p.food < 3:
-                print("You try to throw a punch, but unfortunately you're too weak and get pummeled instantly.")
-                print(
-                    "You walk away, thinking that you may have a chance if you actually had breakfast this morning....")
-            else:
-                initiate_fight(p, l, item_data)
-
-
 
     elif choice == 'map':
         show_map(w.map, w.locations)
 
     elif choice == 'inventory':
-        print([item.name for item in p.inventory])
+        items = [item.name for item in p.inventory]
+        if items:
+            print(items)
+        else:
+            print("[Inventory Empty]")
 
     elif choice == 'score':
         print("You have " + str(p.points) + " points.")
@@ -183,7 +237,10 @@ def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict
             for object in w.items[l.map_position]:
                 if object.name == item:
                     p.inventory.append(object)
-                    p.points += object.points
+
+                    if not isinstance(object, Usable_Item):
+                        p.points += object.points
+
                     w.items[l.map_position].remove(object)
                     print("You have picked up " + item)
 
@@ -198,7 +255,6 @@ def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict
         for object in p.inventory:
             if item == object.name: item_object = object
         item_object.use_item(p, l)
-    return
 
 
 def check_victory(p: Player, w: World, l: Location) -> None:
@@ -214,10 +270,9 @@ if __name__ == "__main__":
     p = Player(0, 1)  # set starting location of player; you may change the x, y coordinates here as appropriate
 
     # setting first_visit attribute for blocked/hallway locations
-    w.locations[0].first_visit_dict(w.map)
-    w.locations[-1].first_visit_dict(w.map)
+    w.locations[0].init_fv_examine(w.map)
+    w.locations[-1].init_fv_examine(w.map)
 
-    print("Insert initial plot")
     menu = ["look", "map", "inventory", "score", "quit"]
 
     choice = 'move'
@@ -234,16 +289,15 @@ if __name__ == "__main__":
         if location.examined and (location.map_position in w.items and w.items[location.map_position] != []):
             available_actions.append("pick up")
         else:
-            if not location.examined: available_actions.append("examine")
+            if (isinstance(location, BlockedOrHallway) and not location.examined[(p.x, p.y)]) or not location.examined:
+                available_actions.append("examine")
 
         if choice == 'move':
-            print(location_description(location))
-            # Depending on whether it's been visited before,
-            # print either full description (first time visit) or brief description (every subsequent visit)
-            print("What to do? \n")
+            print("Moves left:", move_limit, "\n")
+            location_description(p, location)
+            print("\nWhat to do? ")
 
-        print("Moves left:", move_limit)
-        print("[menu]")
+        print("\n[menu]")
 
         for action in available_actions:
             print(action)
@@ -253,7 +307,7 @@ if __name__ == "__main__":
             choice = input("\nInvalid. Choose action: ")
 
         if choice == "[menu]":
-            print("Menu Options: \n")
+            print("\nMenu Options: ")
             for option in menu:
                 print(option)
 
@@ -261,13 +315,10 @@ if __name__ == "__main__":
             while choice not in menu:
                 choice = input("\nInvalid. Choose action: ")
 
-            player_action(choice, p, w, location, w.items)
-
-        elif choice == 'quit':
+        if choice == 'quit':
             break
 
-        else:
-            player_action(choice, p, w, location, w.items)
+        player_action(choice, p, w, location, w.items)
 
         if choice == "examine" or choice == "move":
             move_limit -= 1

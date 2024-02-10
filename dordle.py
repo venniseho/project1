@@ -3,6 +3,7 @@
 possible_words.txt is directly taken from assignment 2
 """
 import random
+from game_data import Location
 from typing import TextIO
 
 
@@ -101,9 +102,10 @@ def check_guess(guess: str, answer: str) -> list:
     return feedback
 
 
-def play_wordle() -> None:
+def play_dordle(location: Location) -> None:
     """
-    Launches the game of wordle.
+    Launches the game of wordle and returns True if the player won the game.
+    Otherwise, returns False.
     """
     # load word_data
     word_file = open("possible_words.txt")
@@ -161,12 +163,9 @@ def play_wordle() -> None:
     # post-game
     if win1 and win2:
         print('\nYou win!')
+        location.examined = True
 
     else:
         print('\nYou lose :(')
 
     print(f"\nAnswers: {answer1}, {answer2}")
-
-
-if __name__ == "__main__":
-    play_wordle()

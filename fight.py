@@ -81,6 +81,7 @@ def initiate_fight(p: Player, l: Location, item_data: dict[Any, list[Item]]) -> 
         print("You have beaten your friend successfully, and it looks like he dropped something! ")
         l.examined = True
         items = [item.name for item in l.available_items(item_data)]
+
         if items != []:
             print(items)
         else:
