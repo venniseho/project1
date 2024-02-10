@@ -1,46 +1,94 @@
+move
 S
+move
 S
-Examine
-Pick Up: T-Card
-Pick Up: Can of Soda
-Inventory
+examine
+pick up
+T Card
+[menu]
+inventory
+pick up
+Soda Can
+[menu]
+inventory
+use
+Soda Can
+[menu]
+inventory
+move
+E
+move
+E
+examine
+pick up
+Chip Bag
+[menu]
+inventory
+use
+Chip Bag
+[menu]
+inventory
+move
+E
+examine
+pick up
+Yogurt Cup
+[menu]
+inventory
+use
+Yogurt Cup
+[menu]
+inventory
+move
 S
-E
-Examine
-Pick Up: Granola Bar
-Inventory
-Use: Granola Bar
-Inventory
+examine
+fight
+bypass win
+pick up
+Room Key
+[menu]
+inventory
+move
 N
-E
-E
-E
-S
-Examine
-Pick Up: Room Key
-Inventory
+move
 N
+move
+E
+examine
+pick up
+Transportation Card
+[menu]
+inventory
+move
+E
+move
 N
-E
-Examine
-Pick Up: Transportation Card
-Inventory
-W
+move
 N
-N
+examine
+#TODO: Add Dordle Thingy
+pick up
+Cheat Sheet
+[menu]
+inventory
+move
+W
+move
+W
+move
+W
+move
+W
+move
+W
+examine
+pick up
+Lucky Pen
+[menu]
+inventory
+move
 E
-Examine
-Pick Up: Cheat Sheet
-Inventory
-W
-W
-W
-W
-W
-Examine
-Use: Room Key
-Pick Up: Lucky Pen
-Inventory
+move
 E
-E
-Use: Transportation Card
+use
+Transportation Carde
