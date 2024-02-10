@@ -26,7 +26,8 @@ from dordle import play_dordle
 
 
 def move(p: Player, d: str, w: World) -> None:
-    """Given a direction (N, S, W, E), update the player's location in that direction given the move is valid
+    """
+    Given a direction (N, S, W, E), update the player's location in that direction given the move is valid
     """
     direction = {'N': (0, -1), 'S': (0, 1), 'W': (-1, 0), 'E': (1, 0)}
     new_x = p.x + direction[d][0]
@@ -69,7 +70,7 @@ def print_long_description(curr_location: Location) -> None:
 
 def location_description(p: Player, curr_location: Location, command: Optional[str] = None) -> None:
     """
-    Prints out the location_description of a particular location
+    Prints out the location_description of a particular location.
     """
 
     if isinstance(curr_location, BlockedOrHallway):
@@ -202,11 +203,28 @@ def pick_up(p: Player, w: World, curr_location: Location) -> None:
                 print("You have picked up " + item)
 
     else:
-        print("You don't know what items are available because you have not examined this room yet. ")
+        print("You don't know what items are available because you have not examined this room yet.")
 
 
-def examine(p: Player, curr_location: Location, item_data: dict[Any, list[Item]]) -> None:
-    """Allow player to examine the location to find possible items"""
+def examine(p: Player, curr_location: Location, item_data: dict[int, list[Item]]) -> None:
+    """
+    Allow player to examine the location to find possible items
+
+    >>> granola = Item('granola', 1, 2, 5)
+    >>> player1 = Player(0, 1)
+    >>> curr_location1 = Location(1, 'location', 'brief', 'long')
+    >>> item_dict1 = {2: [granola]}
+    >>> examine(player1, curr_location1, item_dict1)
+    No available items at this location.
+
+    >>> granola = Item('granola', 1, 2, 5)
+    >>> player2 = Player(0, 1)
+    >>> curr_location2 = Location(1, 'location', 'brief', 'long')
+    >>> item_dict2 = {1: [granola]}
+    >>> examine(player2, curr_location2, item_dict2)
+    You search the whole area and have found something!
+    ['granola']
+    """
     if isinstance(curr_location, BlockedOrHallway):
         if not curr_location.examined[(p.x, p.y)]:
             curr_location.examined[(p.x, p.y)] = True
