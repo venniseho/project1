@@ -19,10 +19,10 @@ This file is Copyright (c) 2024 CSC111 Teaching Team
 """
 
 # Note: You may add in other import statements here as needed
+from typing import Optional, Any
 from game_data import BlockedOrHallway, World, Item, Location, Player, Usable_Item
 from fight import initiate_fight
 from dordle import play_dordle
-from typing import Optional, Any
 
 
 def move(p: Player, d: str, w: World) -> None:
@@ -124,21 +124,21 @@ def show_map(map_data: list[list[int]], location_data: list[Location]) -> None:
 
     # print the map grid in a visually pleasing manner
     for row in new_map:
-        grid_row = f"   "
+        grid_row = "   "
         for item in row:
             grid_row += f"{str(item) + " ": ^3}"
 
         print(grid_row)
 
     # print the legend for the map location names
-    legend = [f"{location_data[i].map_position} - {location_data[i].name}" for i in known_locations]
+    legend = [f"{location_data[index].map_position} - {location_data[index].name}" for index in known_locations]
     print()
     print('- - Unaccessible Square')
     for i in legend:
         print(i)
 
 
-def gameplay(p: Player, l: Location, item_data: dict[Any, list[Item]]) -> None:
+def gameplay(p: Player, curr_location: Location, item_data: dict[Any, list[Item]]) -> None:
     """
     Initiates gameplay for our two minigames: Fight and Dordle
 
@@ -146,12 +146,12 @@ def gameplay(p: Player, l: Location, item_data: dict[Any, list[Item]]) -> None:
     - l.map_position == 3 or l.map_position == 11
     """
     # FIGHT
-    if l.map_position == 11:
+    if curr_location.map_position == 11:
         print("After searching the grounds of chestnut, you see your friend with your room key.")
         print("Unfortunately for you, they're still mad about...something. You're not quite sure what you did.")
         print("All you know is you're not getting that room key without a fight!")
         fight = input("Do you run or fight? (Fighting takes time so you lose a move fyi)")
-        while fight != 'run' and fight != 'fight':
+        while fight not in ['run', 'fight']:
             print("Invalid input.")
             fight = input("Do you run or fight? (Fighting takes time so you lose a move fyi)")
         if fight == 'run':
@@ -160,10 +160,10 @@ def gameplay(p: Player, l: Location, item_data: dict[Any, list[Item]]) -> None:
             print("You try to throw a punch, but unfortunately you're too weak and get pummeled instantly.")
             print("You walk away, thinking that you may have a chance if you actually had breakfast this morning....")
         else:
-            initiate_fight(p, l, item_data)
+            initiate_fight(p, curr_location, item_data)
 
     # DORDLE
-    elif l.map_position == 3:
+    elif curr_location.map_position == 3:
         print("After searching every floor of EJ Pratt, you realise that someone else in the library has"
               " your cheat sheet!")
         print("They challenge you to a game of dordle for the rights to the cheat sheet (even though it literally"
@@ -171,97 +171,113 @@ def gameplay(p: Player, l: Location, item_data: dict[Any, list[Item]]) -> None:
         print("Taking the challenge will cost you one move.")
 
         dordle = input("Do you take the challenge? (Yes or No): ").upper()
-        while dordle != 'YES' and dordle != 'NO':
+        while dordle not in ['YES', 'NO']:
             print("Invalid input.")
             dordle = input("Do you take the challenge? (Yes or No): ").upper()
 
         if dordle == "YES":
-            play_dordle(l)
+            play_dordle(curr_location)
 
         else:
             print("You do not take the challenge. Maybe you have time to just rewrite the cheat sheet? "
                   "(you do not and you very much need that cheat sheet)")
 
 
-def player_action(choice: str, p: Player, w: World, l: Location, item_data: dict[Any, list[Item]]) -> None:
+def pick_up(p: Player, w: World, curr_location: Location) -> None:
+    """Allows player to pick up item"""
+    if curr_location.examined:
+        print([location_item.name for location_item in w.items[curr_location.map_position]])
 
-    if choice == 'move':
+        item = input("\nPick an item: ")
+        while item not in [location_item.name for location_item in w.items[curr_location.map_position]]:
+            item = input("\nInvalid item. Pick an item: ")
+
+        for picked_object in w.items[curr_location.map_position]:
+            if picked_object.name == item:
+                p.inventory.append(picked_object)
+
+                p.points = p.points + picked_object.points if not isinstance(picked_object, Usable_Item) else p.points
+
+                w.items[curr_location.map_position].remove(picked_object)
+                print("You have picked up " + item)
+
+    else:
+        print("You don't know what items are available because you have not examined this room yet. ")
+
+
+def examine(p: Player, curr_location: Location, item_data: dict[Any, list[Item]]) -> None:
+    """Allow player to examine the location to find possible items"""
+    if isinstance(curr_location, BlockedOrHallway):
+        if not curr_location.examined[(p.x, p.y)]:
+            curr_location.examined[(p.x, p.y)] = True
+        print("No available items at this location.")
+
+    elif curr_location.map_position in [3, 11]:
+        print("You have found a minigame!")
+        gameplay(p, curr_location, item_data)
+
+    else:
+        curr_location.examined = True
+        items = [location_item.name for location_item in curr_location.available_items(item_data)]
+        if items:
+            print("You search the whole area and have found something!")
+            print(items)
+        else:
+            print("No available items at this location.")
+
+
+def use(p: Player, curr_location: Location) -> None:
+    """Allow player to use a usable item"""
+    print([player_item.name for player_item in p.inventory if isinstance(player_item, Usable_Item)])
+    item = input("\nPick an item: ")
+    while item not in [player_item.name for player_item in p.inventory if isinstance(player_item, Usable_Item)]:
+        item = input("\nInvalid item. Pick an item: ")
+    for player_object in p.inventory:
+        if item == player_object.name:
+            item_object = player_object
+    item_object.use_item(p, curr_location)
+
+
+def player_action(player_choice: str, p: Player, w: World,
+                  curr_location: Location, item_data: dict[Any, list[Item]]) -> None:
+    """Takes a player's choice and based on it, performs a specific action (e.g. move input will mutate player
+    and move them)."""
+    if player_choice == 'move':
         directions = ['N', 'S', 'E', 'W']
-        print("\nValid directions: ", [d for d in directions if is_valid_move(p, d, w)])
+        print("\nValid directions: ", [direction for direction in directions if is_valid_move(p, direction, w)])
         d = input("\nPick a direction: ")
 
         while d not in directions:
             d = input("\n Invalid Input. Pick a direction: ")
         move(p, d, w)
 
-    elif choice == 'look':
-        location_description(p, l, 'look')
+    elif player_choice == 'look':
+        location_description(p, curr_location, 'look')
 
-    elif choice == 'examine':
-        if isinstance(l, BlockedOrHallway):
-            if not l.examined[(p.x, p.y)]:
-                l.examined[(p.x, p.y)] = True
-            print("No available items at this location.")
+    elif player_choice == 'examine':
+        examine(p, curr_location, item_data)
 
-        elif l.map_position == 3 or l.map_position == 11:
-            print("You have found a minigame!")
-            gameplay(p, l, item_data)
-
-        else:
-            l.examined = True
-            items = [item.name for item in l.available_items(item_data)]
-            if items:
-                print("You search the whole area and have found something!")
-                print(items)
-            else:
-                print("No available items at this location.")
-
-    elif choice == 'map':
+    elif player_choice == 'map':
         show_map(w.map, w.locations)
 
-    elif choice == 'inventory':
-        items = [item.name for item in p.inventory]
+    elif player_choice == 'inventory':
+        items = [player_item.name for player_item in p.inventory]
         if items:
             print(items)
         else:
             print("[Inventory Empty]")
 
-    elif choice == 'score':
+    elif player_choice == 'score':
         print("You have " + str(p.points) + " points.")
 
-    elif choice == 'pick up':
+    elif player_choice == 'pick up':
+        pick_up(p, w, curr_location)
 
-        if l.examined:
-            print([object.name for object in w.items[l.map_position]])
-
-            item = input("\nPick an item: ")
-            while item not in [object.name for object in w.items[l.map_position]]:
-                item = input("\nInvalid item. Pick an item: ")
-
-            for object in w.items[l.map_position]:
-                if object.name == item:
-                    p.inventory.append(object)
-
-                    if not isinstance(object, Usable_Item):
-                        p.points += object.points
-
-                    w.items[l.map_position].remove(object)
-                    print("You have picked up " + item)
-
-        else:
-            print("You don't know what items are available because you have not examined this room yet. ")
-
-    elif choice == 'use':
-        print([item.name for item in p.inventory if isinstance(item, Usable_Item)])
-        item = input("\nPick an item: ")
-        while item not in [item.name for item in p.inventory if isinstance(item, Usable_Item)]:
-            item = input("\nInvalid item. Pick an item: ")
-        for object in p.inventory:
-            if item == object.name: item_object = object
-        item_object.use_item(p, l)
+    elif player_choice == 'use':
+        use(p, curr_location)
 
 
-def check_victory(p: Player, w: World, l: Location) -> None:
+def check_victory(p: Player) -> None:
     """Checks to see if the player won the game"""
     items = {item.name for item in p.inventory}
     if "Cheat Sheet" in items and "Lucky Pen" in items and "T Card" in items and p.x == 5 and p.y == 4:
@@ -270,37 +286,40 @@ def check_victory(p: Player, w: World, l: Location) -> None:
 
 # Note: You may modify the code below as needed; the following starter template are just suggestions
 if __name__ == "__main__":
-    w = World(open("map.txt"), open("locations.txt"), open("items.txt"))
-    p = Player(0, 1)  # set starting location of player; you may change the x, y coordinates here as appropriate
+    world = World(open("map.txt"), open("locations.txt"), open("items.txt"))
+
+    player = Player(0, 1)  # set starting location of player; you may change the x, y coordinates here as appropriate
 
     # setting first_visit attribute for blocked/hallway locations
-    w.locations[0].init_fv_examine(w.map)
-    w.locations[-1].init_fv_examine(w.map)
+    world.locations[0].init_fv_examine(world.map)
+    world.locations[-1].init_fv_examine(world.map)
 
     menu = ["look", "map", "inventory", "score", "quit"]
 
     choice = 'move'
     move_limit = 40
 
-    while not p.victory and move_limit > 0:
+    while not player.victory and move_limit > 0:
 
-        location = w.get_location(p.x, p.y)
+        location = world.get_location(player.x, player.y)
         available_actions = ["move"]
 
-        if any(item.name for item in p.inventory if isinstance(item, Usable_Item)):
+        if any(item.name for item in player.inventory if isinstance(item, Usable_Item)):
             available_actions.append("use")
 
-        if location.examined and (location.map_position in w.items and w.items[location.map_position] != []):
+        if location.examined and (location.map_position in world.items and world.items[location.map_position] != []):
             available_actions.append("pick up")
         else:
-            if (isinstance(location, BlockedOrHallway) and not location.examined[(p.x, p.y)]) or not location.examined:
+            if ((isinstance(location, BlockedOrHallway)
+                 and not location.examined[(player.x, player.y)])
+                    or not location.examined):
                 available_actions.append("examine")
 
         if choice == 'move':
             print("Moves left:", move_limit, "\n")
-            location_description(p, location)
+            location_description(player, location)
             print("\nWhat to do? ")
-            location_description(p, location)
+            location_description(player, location)
             # Depending on whether it's been visited before,
             # print either full description (first time visit) or brief description (every subsequent visit)
             print("What to do? \n")
@@ -326,16 +345,16 @@ if __name__ == "__main__":
         if choice == 'quit':
             break
 
-        player_action(choice, p, w, location, w.items)
+        player_action(choice, player, world, location, world.items)
 
-        if choice == "examine" or choice == "move":
+        if choice in ["examine", "move"]:
             move_limit -= 1
 
-        check_victory(p, w, location)
+        check_victory(player)
 
-    if p.victory:
+    if player.victory:
         print("You have successfully brought everything to the exam centre, and just in the nick of time too!")
-        print("Points: " + str(p.points))
+        print("Points: " + str(player.points))
         print("You win!")
 
     elif move_limit <= 0:
@@ -344,13 +363,9 @@ if __name__ == "__main__":
     elif choice == 'quit':
         print("You have successfuly quit the game. Nothing was saved sorry.")
 
-        # TODO: CALL A FUNCTION HERE TO HANDLE WHAT HAPPENS UPON THE PLAYER'S CHOICE
-        #  REMEMBER: the location = w.get_location(p.x, p.y) at the top of this loop will update the location if
-        #  the choice the player made was just a movement, so only updating player's position is enough to change the
-        #  location to the next appropriate location
-        #  Possibilities:
-        #  A helper function such as do_action(w, p, location, choice)
-        #  OR A method in World class w.do_action(p, location, choice)
-        #  OR Check what type of action it is, then modify only player or location accordingly
-        #  OR Method in Player class for move or updating inventory
-        #  OR Method in Location class for updating location item info, or other location data etc....
+    import python_ta
+
+    python_ta.check_all(config={
+        'max-line-length': 120,
+        'extra-imports': ['hashlib']
+    })
