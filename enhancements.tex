@@ -17,47 +17,81 @@
 
 \begin{enumerate}
 
-\item Food/Usable
+\item Food/Usable (subclass)
 	\begin{itemize}
-	\item Places food throughout the map that gives points, along with another usable item (transportation card) which can be used at the subway station (location 2) and allows for direct travel form there to the exam centre.
+	\item Places food throughout the map that gives points, along with another usable item (transportation card)
+	which can be used at the subway station (location 2) and allows for direct travel form there to the exam centre.
 	\item Medium
-	\item Some aspects such as transportation form subway to exam centre were low but other aspects, such as adding a method of the usable item class to use the item were more complex, as they involved multiple steps (removing from inventory, points, etc.). The actual inheritance also provided challenge as this had to be done in the load items method of World, by not only indicating which items had to be usable and which ones had to be simply items but also allowing for the freedom to add multiple unspecified food items in the future (fixed by creating a set list of non-food items and if the item is not in that list, it is a food).
+	\item Some aspects such as transportation form subway to exam centre were low but other aspects, such as adding a
+	method of the usable item class to use the item were more complex, as they involved multiple steps (removing from inventory, points, etc.). The actual inheritance also provided challenge as this had to be done in the load items method of World, by not only indicating which items had to be usable and which ones had to be simply items but also allowing for the freedom to add multiple unspecified food items in the future (fixed by creating a set list of non-food items and if the item is not in that list, it is a food).
 	% Feel free to add more subheadings if you need
 	\end{itemize}
 
 
-\item Room Key / Fight
+\item Room Key / Fight (minigame)
 	\begin{itemize}
-	\item Your room is locked at the beginning, with your cheat sheet inside. You need to collect the key at chestnut. To do this, you need to engage in a fight with someone, win the key and return to the room to pick up the item. To win the fight, you must:
+	\item Your room is locked at the beginning, with your cheat sheet inside. You need to collect the key at chestnut.
+	To do this, you need to engage in a fight with someone, win the key and return to the room to pick up the item.
+	To win the fight, you must:
             \begin{itemize}
             \item Eat at least 3 food items (cause you need to eat to fight)
             \item Beat the opponent in a turn based fight (that is reduce their health to 0 before yours goes to 0).
             \end{itemize}
 	\item High
-	\item While the code was not complex (implemented throguh multiple if statements), the design was complex as we had to consider game design aspects (attack/heal amounts, specials) and a mechanism for determining the opponents moves (e.g. attack or heal).
+	\item While the code was not complex (implemented throguh multiple if statements), the design was complex as we had
+	 to consider game design aspects (attack/heal amounts, specials) and a mechanism for determining the opponents moves
+	  (e.g. attack or heal).
 	% Feel free to add more subheadings if you need
 	\end{itemize}
 
 
-\item Dordle
+\item Dordle (minigame)
 	\begin{itemize}
-	\item Basic description of what the enhancement is:
-	\item Complexity level (low/medium/high):
-	\item Reasons you believe this is the complexity level (e.g. mention implementation details
+	\item Basic description of what the enhancement is: To acquire your cheat sheet, you must pass a game of dordle
+	(wordle but with two boards). To win, you must correctly guess both 5-letter words within 6 tries.
+	\item Complexity level (low/medium/high): Medium
+	\item Reasons you believe this is the complexity level (e.g. mention implementation details)
+	Wordle has set rules, so it was simple to list out what needed to be done and in what order. However, turning those
+	requirements into code proved to be challenging, especially when adding the extra layer of two boards. It was a
+	challenge to figure out how the two boards would work as well as what to do about the win condition. In the end, it
+	was decided that we would create functions for the basic wordle board and implement two variables in the main game
+	to keep track of both boards. In summary, the details of the implementation of dordle were the most finicky, while
+	the overall game design was not too difficult.
 	\end{itemize}
 
-\item Examine
+
+\item Examine (function) \ BlockedOrHallway (subclass)
 	\begin{itemize}
-	\item Basic description of what the enhancement is:
-	\item Complexity level (low/medium/high):
-	\item Reasons you believe this is the complexity level (e.g. mention implementation details
+	\item Basic description of what the enhancement is: A room must be examined before you can access the items at a
+	particular location.
+	\item Complexity level (low/medium/high): Hard
+	\item Reasons you believe this is the complexity level (e.g. mention implementation details)
+	We realized we needed to create two different ways of examining a room based on the type of the room:
+	a blocked area/hallway vs a named location. The issue was that there were multiple blocked areas/hallways that we
+	needed to deal with and could not all be implemented as one room. To combat this issue, we created a sub-class of
+	the Location class called BlockedOrHallway. The subclass contains two modified attributes: first_visit and examined.
+	In the original Location class, the attributes are booleans as named locations only occur once on the map. However,
+	in BlockedOrHallway, they are dictionaries mapping (x, y) coordinates to booleans, meaning we could access and
+	change each occurrence of a blocked area or hallway's first_visit or examine seperately. Now, blocked areas and
+	hallways can all be examined, and their proper short/long description will appear. In summary, the complexity of
+	this implementation was hard because it required us to think about how different attributes and parts of the game
+	would work together (and involved many hours of debugging).
 	\end{itemize}
 
-\item Map
+
+
+\item Map (show_map function)
 	\begin{itemize}
-	\item Basic description of what the enhancement is:
-	\item Complexity level (low/medium/high):
-	\item Reasons you believe this is the complexity level (e.g. mention implementation details
+	\item Basic description of what the enhancement is: A map that updates as the player explores.
+	If the player has not yet explored the area, it will show up as a '?'
+	\item Complexity level (low/medium/high): Medium
+	\item Reasons you believe this is the complexity level (e.g. mention implementation details)
+	As we had already done the work of implementing the BlockedOrHallway subclass, we already knew what locations have
+	or have not been visited so we just needed to figure out how to show the map to the user in a visually pleasing
+	manner. It was a lot of playing around with formatting, and figuring out the proper if statements needed and what
+	needed to be done within each statement. Overall, creating the map function wasn't too difficult because we had
+	already done the harder work of creating the 'examined' attribute and creating the BlockedOrHallway subclass, it
+	was just quite finicky with figuring out the proper if statements and formatting.
 	\end{itemize}
 
 

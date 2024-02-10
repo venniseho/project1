@@ -265,7 +265,7 @@ class UsableItem(Item):
         - (self.name != 'Transportation Card') and (self.is_food is True)
         - any([self.name == item.name for item in p.inventory])
 
-        >>> granola = UsableItem('granola', 1, 2, 5, True)
+        >>> granola = UsableItem('granola', 1, 2, True)
         >>> location1 = Location(1, 'name', 'brief_desc', 'long_desc')
         >>> player1 = Player(0, 1)
         >>> player1.inventory.append(granola)
@@ -279,7 +279,7 @@ class UsableItem(Item):
         >>> player1.inventory == []
         True
 
-        >>> subway_card = UsableItem('Transportation Card', 1, 2, 5, False)
+        >>> subway_card = UsableItem('Transportation Card', 1, 2, False)
         >>> location2 = Location(2, 'Subway Station', 'brief_desc', 'long_desc')
         >>> player2 = Player(0, 2)
         >>> player2.inventory.append(subway_card)
@@ -289,7 +289,7 @@ class UsableItem(Item):
         >>> player2.inventory == []
         True
 
-        >>> subway_card = UsableItem('Transportation Card', 1, 2, 5, False)
+        >>> subway_card = UsableItem('Transportation Card', 1, 2, False)
         >>> location2 = Location(4, 'Not the Subway Station', 'brief_desc', 'long_desc')
         >>> player2 = Player(0, 5)
         >>> player2.inventory.append(subway_card)
