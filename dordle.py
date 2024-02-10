@@ -25,6 +25,23 @@ def load_words(word_file: TextIO) -> list[str]:
 def create_wordle_grid() -> list[list[str]]:
     """
     Create a blank 5x6 wordle grid (width x height).
+
+    >>> grid = create_wordle_grid()
+    >>> len(grid) == 6
+    True
+    >>> all([len(row) == 5 for row in grid])
+    True
+    >>> all([i == '_' for row in grid for i in row])
+    True
+
+    >>> expected = ([['_', '_', '_', '_', '_'], \
+                    ['_', '_', '_', '_', '_'], \
+                    ['_', '_', '_', '_', '_'], \
+                    ['_', '_', '_', '_', '_'], \
+                    ['_', '_', '_', '_', '_'], \
+                    ['_', '_', '_', '_', '_']])
+    >>> expected == grid
+    True
     """
 
     grid = []
@@ -42,9 +59,31 @@ def update_wordle_grid(checked_guess: list[str], turn: int, wordle_grid: list[li
     """
     Mutates wordle_grid by turning a blank line at index 'turn' to be equal to checked_guess.
 
-    Representation Invariants:
+    Preconditions:
     - len(wordle_grid) == 6
     - all[len(row) == 5 for row in wordle_grid]
+
+    >>> grid = create_wordle_grid()
+    >>> row = 3
+    >>> guess_list = ['?', 't', 'i', '?', '?']
+    >>> update_wordle_grid(guess_list, row, grid)
+
+    >>> row = 0
+    >>> guess_list = ['t', 'h', '?', 'i', 'r']
+    >>> update_wordle_grid(guess_list, row, grid)
+
+    >>> row = 5
+    >>> guess_list = ['M', 'I', 'R', 'T', 'H']
+    >>> update_wordle_grid(guess_list, row, grid)
+
+    >>> expected = [['t', 'h', '?', 'i', 'r'], \
+                    ['_', '_', '_', '_', '_'], \
+                    ['_', '_', '_', '_', '_'], \
+                    ['?', 't', 'i', '?', '?'], \
+                    ['_', '_', '_', '_', '_'], \
+                    ['M', 'I', 'R', 'T', 'H']]
+    >>> grid == expected
+    True
     """
     wordle_grid[turn] = checked_guess
 
@@ -73,6 +112,13 @@ def check_guess(guess: str, answer: str) -> list:
     - if it's the right letter and right spot, then capitalize
     - if it's the right letter but wrong spot, then lowercase
     - if it's the wrong letter, then it shows up as a question mark
+
+    Preconditions:
+    - all([letter.isupper() for letter in guess])
+    - all([letter.isupper() for letter in answer])
+
+    >>> check_guess('ADIEU', 'FRIED')
+    ['?', 'd', 'I', 'E', '?']
     """
     # create a dictionary that maps a letter in answer to the number of times it occurs
     answer_letter_count = {}
@@ -174,6 +220,3 @@ def play_dordle(location: Location) -> None:
         print('\nYou lose :(')
 
     print(f"\nAnswers: {answer1}, {answer2}")
-
-if __name__ == "__main__":
-    play_dordle()

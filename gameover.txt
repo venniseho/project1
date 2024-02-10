@@ -75,7 +75,20 @@ N
 move
 N
 examine
-#TODO: Add Dordle Thingy
+No
+examine
+Yes
+examine
+Yes
+Their
+Their
+Their
+Their
+Their
+Their
+examine
+Yes
+bypass
 pick up
 Cheat Sheet
 [menu]

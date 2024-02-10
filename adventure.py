@@ -20,7 +20,7 @@ This file is Copyright (c) 2024 CSC111 Teaching Team
 
 # Note: You may add in other import statements here as needed
 from typing import Optional, Any
-from game_data import BlockedOrHallway, World, Item, Location, Player, Usable_Item
+from game_data import BlockedOrHallway, World, Item, Location, Player, UsableItem
 from fight import initiate_fight
 from dordle import play_dordle
 
@@ -143,7 +143,7 @@ def gameplay(p: Player, curr_location: Location, item_data: dict[Any, list[Item]
     Initiates gameplay for our two minigames: Fight and Dordle
 
     Preconditions:
-    - l.map_position == 3 or l.map_position == 11
+    - location.map_position == 3 or location.map_position == 11
     """
     # FIGHT
     if curr_location.map_position == 11:
@@ -196,7 +196,7 @@ def pick_up(p: Player, w: World, curr_location: Location) -> None:
             if picked_object.name == item:
                 p.inventory.append(picked_object)
 
-                p.points = p.points + picked_object.points if not isinstance(picked_object, Usable_Item) else p.points
+                p.points = p.points + picked_object.points if not isinstance(picked_object, UsableItem) else p.points
 
                 w.items[curr_location.map_position].remove(picked_object)
                 print("You have picked up " + item)
@@ -228,9 +228,9 @@ def examine(p: Player, curr_location: Location, item_data: dict[Any, list[Item]]
 
 def use(p: Player, curr_location: Location) -> None:
     """Allow player to use a usable item"""
-    print([player_item.name for player_item in p.inventory if isinstance(player_item, Usable_Item)])
+    print([player_item.name for player_item in p.inventory if isinstance(player_item, UsableItem)])
     item = input("\nPick an item: ")
-    while item not in [player_item.name for player_item in p.inventory if isinstance(player_item, Usable_Item)]:
+    while item not in [player_item.name for player_item in p.inventory if isinstance(player_item, UsableItem)]:
         item = input("\nInvalid item. Pick an item: ")
     for player_object in p.inventory:
         if item == player_object.name:
@@ -304,7 +304,7 @@ if __name__ == "__main__":
         location = world.get_location(player.x, player.y)
         available_actions = ["move"]
 
-        if any(item.name for item in player.inventory if isinstance(item, Usable_Item)):
+        if any(item.name for item in player.inventory if isinstance(item, UsableItem)):
             available_actions.append("use")
 
         if location.examined and (location.map_position in world.items and world.items[location.map_position] != []):

@@ -21,62 +21,26 @@ This file is Copyright (c) 2024 CSC111 Teaching Team
 from typing import Any, Optional, TextIO
 
 
-class Player:
-    """
-    A Player in the text advanture game.
-    Functions:
-    - Move
-    - Pick up Items
-    - Use Items
-
-    Instance Attributes:
-        - x: int
-        - y: int
-        - inventory: list[Item]
-        - points: int
-        - victory: bool
-        - food: int
-
-    Representation Invariants:
-        - 0 <= self.x <= 6
-        - 0 <= self.y <= 5
-        - self.points >= 0
-        - food >= 0
-    """
-
-    def __init__(self, x: int, y: int) -> None:
-        """
-        Initializes a new Player at position (x, y).
-        """
-
-        # NOTES:
-        # This is a suggested starter class for Player.
-        # You may change these parameters and the data available for the Player object as you see fit.
-
-        self.x = x
-        self.y = y
-        self.inventory = []
-        self.points = 0
-        self.victory = False
-        self.food = 0
-
-
 class Item:
     """An item in our text adventure game world.
 
     something triggered by pick up/deposit
 
     Instance Attributes:
-        - name: str
-        - start_position: int
-        - target_position: int
-        - target_points: int
+    - name: str
+    - start_position: int
+    - target_position: int
+    - target_points: int
 
     Representation Invariants:
-        - start_position >= -1
-        - target_position >= -1
-        - target_points >= 0
+    - start_position >= -1
+    - target_position >= -1
+    - target_points >= 0
     """
+    name: str
+    start_position: int
+    target_position: int
+    points: int
 
     def __init__(self, name: str, start: int, target: int, target_points: int) -> None:
         """Initialize a new item.
@@ -119,6 +83,12 @@ class Location:
     Representation Invariants:
     - map_position >= -1
     """
+    map_position: int
+    name: str
+    brief_desc: str
+    long_desc: str
+    first_visit: bool
+    examined: bool
 
     def __init__(self, map_position: int, name: str, brief_desc: str, long_desc: str) -> None:
         """Initialize a new location.
@@ -130,9 +100,25 @@ class Location:
         self.first_visit = True
         self.examined = False
 
-    def available_items(self, item_dict: dict[Any, list[Item]]) -> Optional[list[Item]]:
+    def available_items(self, item_dict: dict[int, list[Item]]) -> Optional[list[Item]]:
         """
-        Returns a list of available items from item_dict at a particular location.
+        Returns a list of available items from item_dict at a particular location only if the player has
+        examined the location before.
+
+        >>> granola = Item('granola', 1, 2, 5)
+        >>> items = {1: [granola]}
+        >>> curr_location = Location(1, 'name', 'brief_desc', 'long_desc')
+        >>> curr_location.available_items(items) is None
+        True
+
+        >>> curr_location.examined = True
+        >>> items_at_location = curr_location.available_items(items)
+        >>> [item.name for item in items_at_location] == ['granola']
+        True
+
+        >>> items = {2: [granola]}
+        >>> curr_location.available_items(items)
+        []
         """
         if not self.examined:
             return None
@@ -144,19 +130,74 @@ class Location:
             return []
 
 
+class Player:
+    """
+    A Player in the text advanture game.
+    Functions:
+    - Move
+    - Pick up Items
+    - Use Items
+
+    Instance Attributes:
+    - x: int
+    - y: int
+    - inventory: list[Item]
+    - points: int
+    - victory: bool
+    - food: int
+
+    Representation Invariants:
+    - 0 <= self.x <= 6
+    - 0 <= self.y <= 5
+    - self.points >= 0
+    - food >= 0
+    """
+    x: int
+    y: int
+    inventory: list[Item]
+    points: int
+    victory: bool
+    food: int
+
+    def __init__(self, x: int, y: int) -> None:
+        """
+        Initializes a new Player at position (x, y).
+        """
+
+        # NOTES:
+        # This is a suggested starter class for Player.
+        # You may change these parameters and the data available for the Player object as you see fit.
+
+        self.x = x
+        self.y = y
+        self.inventory = []
+        self.points = 0
+        self.victory = False
+        self.food = 0
+
+
 class BlockedOrHallway(Location):
     """
-    'Blocked' and 'Hallway' are special Locations that the player can enocunter.
+    'Blocked' and 'Hallway' are special Locations that the player can encounter.
     Unlike named Locations, there can be multiple instances of 'Blocked' and 'Hallway' in the world map.
 
-    It has the updated attributes:
+    It has the following updated attributes:
     - map_position: always equal to 0 or -1
     - first_visit: a dictionary mapping (x, y) coordinates to whether or not the location has been visited before (bool)
     - examined: a dictionary mapping (x, y) coordinates to whether or not the location has been examined before (bool)
 
+    Instance Attributes:
+    - map_position: int
+    - first_visit: dict[tuple, bool]
+    - examined: dict[tuple, bool]
+
     Representation invariants:
     - self.map_position == 0 or self.map_position == -1
     """
+    map_position: int
+    first_visit: dict[tuple, bool]
+    examined: dict[tuple, bool]
+
     def __init__(self, map_position: int, name: str, brief_desc: str, long_desc: str) -> None:
         """Initialize a new hallway or blocked area.
         """
@@ -169,7 +210,6 @@ class BlockedOrHallway(Location):
         For the first_visit attribute and the examined attribute:
         Sets the (x, y) coordinates of blocked or hallway areas and sets first_visit to True (because the player has
         not yet visited the location) and sets examined to Fales (because the player has not examined the location yet).
-
         """
         for y in range(len(map_data)):
             for x in range(len(map_data[0])):
@@ -178,29 +218,76 @@ class BlockedOrHallway(Location):
                     self.examined[(x, y)] = False
 
 
-class Usable_Item(Item):
-    """Usable items in our game"""
+class UsableItem(Item):
+    """
+    Usable items in our game.
+    Unlike regular items, usable items can be consumed or used by the player.
+
+    It has the additional attribute:
+    - is_food: True if an item can be eaten by the player. False otherwise.
+    """
+    is_food: bool
 
     def __init__(self, name: str, start: int, target: int, target_points: int, food: bool) -> None:
-        """Initialize a new usable item with the is_food attribute.
+        """
+        Initialize a new usable item with the is_food attribute.
         """
         super().__init__(name, start, target, target_points)
-        self.name = name
-        self.start_position = start
-        self.target_position = target
-        self.points = target_points
         self.is_food = food
 
+    def use_item(self, p: Player, location: Location) -> None:
+        """
+        Use the item by removing it form the player's inventory and modifying the player's points/location.
+        An item will either be food or it will be the Transportation Card
 
-    def use_item(self, p: Player, l: Location) -> None:
-        """Use the item by removing it form the player's inventory and modifying the player's points/location"""
+        Preconditions:
+        - (self.name == 'Transportation Card') and (self.is_food is False)
+        - (self.name != 'Transportation Card') and (self.is_food is True)
+        - any([self.name == item.name for item in p.inventory])
+
+        >>> granola = UsableItem('granola', 1, 2, 5, True)
+        >>> location1 = Location(1, 'name', 'brief_desc', 'long_desc')
+        >>> player1 = Player(0, 1)
+        >>> player1.inventory.append(granola)
+
+        >>> granola.use_item(player1, location1)
+        You have eaten food, 5 points added!
+        >>> player1.points == 5
+        True
+        >>> player1.food == 1
+        True
+        >>> player1.inventory == []
+        True
+
+        >>> subway_card = UsableItem('Transportation Card', 1, 2, 5, False)
+        >>> location2 = Location(2, 'Subway Station', 'brief_desc', 'long_desc')
+        >>> player2 = Player(0, 2)
+        >>> player2.inventory.append(subway_card)
+
+        >>> subway_card.use_item(player2, location2)
+        You have taken the subway to the exam centre.
+        >>> player2.inventory == []
+        True
+
+        >>> subway_card = UsableItem('Transportation Card', 1, 2, 5, False)
+        >>> location2 = Location(4, 'Not the Subway Station', 'brief_desc', 'long_desc')
+        >>> player2 = Player(0, 5)
+        >>> player2.inventory.append(subway_card)
+
+        >>> subway_card.use_item(player2, location2)
+        You must be at the Subway Station to use it, very close to your room actually....
+        >>> player2.inventory == [subway_card]
+        True
+        """
+
         if self.is_food:
             p.points += 5
             p.food += 1
             p.inventory.remove(self)
             print("You have eaten food, 5 points added!")
+
         elif self.name == 'Transportation Card':
-            if l.map_position == 2:
+            if location.map_position == 2:
                 p.x, p.y = 5, 4
                 p.inventory.remove(self)
                 print("You have taken the subway to the exam centre.")
@@ -212,15 +299,18 @@ class World:
     """A text adventure game world storing all location, item and map data.
 
     Instance Attributes:
-        - map: a nested list representation of this world's map
-        - location: a nested list representation of locations their descriptions
-        - items: a nested list representation of items
+    - map: a nested list representation of this world's map
+    - location: a list of Location objects
+    - items: a list Item objects
 
     Representation Invariants:
-        - self.map != []
-        - self.locations != []
-        - self.items != []
+    - self.map != []
+    - self.locations != []
+    - self.items != []
     """
+    map: list[list[int]]
+    locations: list[Location]
+    items: dict[int, list[Item]]
 
     def __init__(self, map_data: TextIO, location_data: TextIO, item_data: TextIO) -> None:
         """
@@ -229,27 +319,10 @@ class World:
         - location_data: name of text file containing location data (format left up to you)
         - items_data: name of text file containing item data (format left up to you)
         """
-
-        # NOTES:
-
-        # map_data should refer to an open text file containing map data in a grid format, with integers separated by a
-        # space, representing each location, as described in the project handout. Each integer represents a different
-        # location, and -1 represents an invalid, inaccessible space.
-
-        # You may ADD parameters/attributes/methods to this class as you see fit.
-        # BUT DO NOT RENAME OR REMOVE ANY EXISTING METHODS/ATTRIBUTES IN THIS CLASS
-
-        # The map MUST be stored in a nested list as described in the load_map() function's docstring below
         self.map = self.load_map(map_data)
         self.locations = self.load_locations(location_data)
         self.items = self.load_items(item_data)
 
-        # NOTE: You may choose how to store location and item data; create your own World methods to handle these
-        # accordingly. The only requirements:
-        # 1. Make sure the Location class is used to represent each location.
-        # 2. Make sure the Item class is used to represent each item.
-
-    # NOTE: The method below is REQUIRED. Complete it exactly as specified.
     def load_map(self, map_data: TextIO) -> list[list[int]]:
         """
         Store map from open file map_data as the map attribute of this object, as a nested list of integers like so:
@@ -261,17 +334,18 @@ class World:
 
         Return this list representation of the map.
         """
-        map = []
+        map_list = []
         line = map_data.readline().strip()
         while line != '':
             line = line.split(' ')
             row = [int(num) for num in line]
-            map.append(row)
+            map_list.append(row)
             line = map_data.readline().strip()
-        return map
+        return map_list
 
     def load_locations(self, location_data: TextIO) -> list[Location]:
-        """Store locations from open file location_data as a list of Location class items.
+        """
+        Store locations from open file location_data as a list of Location class items.
         The list is structured such that each index corresponds to the location number.
         E.g. Hallway is location 0 so can be accessed by indexing the list at 0.
              Null space is -1 so can be accessed by indexing list at -1.
@@ -281,9 +355,11 @@ class World:
 
         while line != '':
             row = [line]
-            for i in range(2):
-                line = location_data.readline().strip()
-                row.append(line)
+
+            line = location_data.readline().strip()
+            row.append(line)
+            line = location_data.readline().strip()
+            row.append(line)
 
             line = location_data.readline().strip()
             description = ''
@@ -297,12 +373,13 @@ class World:
             else:
                 locations.append(Location(int(row[1]), row[0], row[2], row[3]))
 
-            line = location_data.readline().strip()
+            location_data.readline().strip()
             line = location_data.readline().strip()
         return locations
 
     def load_items(self, item_data: TextIO) -> dict[Any, list[Item]]:
-        """Store items from open file item_data as a dictionary mapping the location number of the item to the items
+        """
+        Store items from open file item_data as a dictionary mapping the location number of the item to the items
         whose start position is that same location.
 
         Dictionary is structured as follows: {location_id1: [item1, item2], location_id2: [item3]}
@@ -314,9 +391,9 @@ class World:
             line = line.split(' ')
             line[3] += ' ' + line.pop(4)
             if line[3] not in ['Lucky Pen', 'Transportation Card', 'Cheat Sheet', 'T Card', 'Room Key']:
-                item = Usable_Item(line[3], int(line[0]), int(line[1]), int(line[2]), True)
+                item = UsableItem(line[3], int(line[0]), int(line[1]), int(line[2]), True)
             elif line[3] == 'Transportation Card':
-                item = Usable_Item(line[3], int(line[0]), int(line[1]), int(line[2]), False)
+                item = UsableItem(line[3], int(line[0]), int(line[1]), int(line[2]), False)
             else:
                 item = Item(line[3], int(line[0]), int(line[1]), int(line[2]))
 
@@ -334,9 +411,10 @@ class World:
 
     # NOTE: The method below is REQUIRED. Complete it exactly as specified.
     def get_location(self, x: int, y: int) -> Optional[Location]:
-        """Return Location object associated with the coordinates (x, y) in the world map, if a valid location exists at
-         that position. Otherwise, return None. (Remember, locations represented by the number -1 on the map should
-         return None.)
+        """
+        Return Location object associated with the coordinates (x, y) in the world map, if a valid location exists at
+        that position. Otherwise, return None. (Remember, locations represented by the number -1 on the map should
+        return None.)
         """
 
         if x < len(self.map[0]) and y < len(self.map) and self.map[y][x] != -1:
@@ -344,3 +422,19 @@ class World:
 
         else:
             return None
+
+
+if __name__ == '__main__':
+    import doctest
+
+    doctest.testmod(verbose=True)
+
+    # When you are ready to check your work with python_ta, uncomment the following lines.
+    # (In PyCharm, select the lines below and press Ctrl/Cmd + / to toggle comments.)
+    # You can use "Run file in Python Console" to run PythonTA,
+    # and then also test your methods manually in the console.
+    import python_ta
+
+    python_ta.check_all(config={
+        'max-line-length': 120
+    })

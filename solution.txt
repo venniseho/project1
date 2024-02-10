@@ -7,6 +7,8 @@ pick up
 T Card
 [menu]
 inventory
+[menu]
+score
 pick up
 Soda Can
 [menu]
@@ -15,6 +17,8 @@ use
 Soda Can
 [menu]
 inventory
+[menu]
+score
 move
 E
 move
@@ -28,6 +32,8 @@ use
 Chip Bag
 [menu]
 inventory
+[menu]
+score
 move
 E
 examine
@@ -39,6 +45,8 @@ use
 Yogurt Cup
 [menu]
 inventory
+[menu]
+score
 move
 S
 examine
@@ -48,6 +56,8 @@ pick up
 Room Key
 [menu]
 inventory
+[menu]
+score
 move
 N
 move
@@ -59,6 +69,8 @@ pick up
 Transportation Card
 [menu]
 inventory
+[menu]
+score
 move
 E
 move
@@ -72,6 +84,8 @@ pick up
 Cheat Sheet
 [menu]
 inventory
+[menu]
+score
 move
 W
 move
@@ -87,6 +101,8 @@ pick up
 Lucky Pen
 [menu]
 inventory
+[menu]
+score
 move
 E
 move
