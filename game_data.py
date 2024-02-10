@@ -240,14 +240,15 @@ class UsableItem(Item):
 
     It has the additional attribute:
     - is_food: True if an item can be eaten by the player. False otherwise.
+    - target_points: always equal to 5
     """
     is_food: bool
 
-    def __init__(self, name: str, start: int, target: int, target_points: int, food: bool) -> None:
+    def __init__(self, name: str, start: int, target: int, food: bool) -> None:
         """
         Initialize a new usable item with the is_food attribute.
         """
-        super().__init__(name, start, target, target_points)
+        super().__init__(name, start, target, 5)
         self.is_food = food
 
     def use_item(self, p: Player, location: Location) -> None:
