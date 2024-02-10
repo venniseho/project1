@@ -40,29 +40,39 @@ def create_wordle_grid() -> list[list[str]]:
 
 def update_wordle_grid(checked_guess: list[str], turn: int, wordle_grid: list[list[str]]) -> None:
     """
-    FIXDOCSTRINGFIXDOCSTRINGFIXDOCSTRINGFIXDOCSTRINGFIXDOCSTRINGFIXDOCSTRINGFIXDOCSTRINGFIXDOCSTRING
     Mutates wordle_grid by turning a blank line at index 'turn' to be equal to checked_guess.
+
+    Representation Invariants:
+    - len(wordle_grid) == 6
+    - all[len(row) == 5 for row in wordle_grid]
     """
     wordle_grid[turn] = checked_guess
-    print(wordle_grid)
 
 
-def print_wordle_grid(wordle_grid: list[list[str]]) -> None:
+def print_wordle_grids(wordle_grid1: list[list[str]], wordle_grid2: list[list[str]]) -> None:
     """
-    prints out the wordle grid in an aesthetically pleasing format.
+    Prints out the wordle grids in an aesthetically pleasing format.
+
+    Representation Invariants:
+    - len(wordle_grid) == 6
+    - all[len(row) == 5 for row in wordle_grid]
     """
-    for row in wordle_grid:
-        grid_row = f" "
+    for row in range(6):
+        grid_row1 = f" "
+        grid_row2 = f" "
+        for letter in range(5):
+            grid_row1 += f"{str(wordle_grid1[row][letter]) + " ": <2}"
+            grid_row2 += f"{str(wordle_grid2[row][letter]) + " ": >2}"
 
-        for item in row:
-            grid_row += f"{str(item) + " ": ^2}"
-
-        print(grid_row)
+        print(f"{grid_row1:^15} {grid_row2:^15}")
 
 
 def check_guess(guess: str, answer: str) -> list:
     """
-    Check guess
+    Checks each letter in guess by wordle rules (with visual modifications for a text-based game).
+    - if it's the right letter and right spot, then capitalize
+    - if it's the right letter but wrong spot, then lowercase
+    - if it's the wrong letter, then it shows up as a question mark
     """
     # create a dictionary that maps a letter in answer to the number of times it occurs
     answer_letter_count = {}
@@ -77,7 +87,6 @@ def check_guess(guess: str, answer: str) -> list:
     feedback = []
 
     for i in range(5):
-
         if guess[i] == answer[i] and answer_letter_count[guess[i]] > 0:
             answer_letter_count[guess[i]] -= 1
             feedback.append(guess[i])
@@ -94,7 +103,7 @@ def check_guess(guess: str, answer: str) -> list:
 
 def play_wordle() -> None:
     """
-    Play wordle.
+    Launches the game of wordle.
     """
     # load word_data
     word_file = open("possible_words.txt")
@@ -102,45 +111,61 @@ def play_wordle() -> None:
     word_file.close()
 
     # initialize useful variables
-    answer = word_data[random.randint(0, len(word_data))]
-    print(answer)
+    answer1 = word_data[random.randint(0, len(word_data))]
+    answer2 = word_data[random.randint(0, len(word_data))]
+
     turn = 0
-    win_condition = False
+    win1 = False
+    win2 = False
 
-    print("This is wordle! You have 6 tries to guess a five-letter word.\n\n"
-          " - a capital letter indicates the letter is in the right place.\n"
-          " - a question mark indicates the letter is in the wrong place.\n"
-          " - a lowercase letter indicates the letter is in the word but in wrong place.\n")
+    print("This is dordle! You have 6 tries to guess two five-letter words.\n\n"
+          " - a capital letter indicates the letter is in the word and in the right place.\n"
+          " - a lowercase letter indicates the letter is in the word but in the wrong place.\n"
+          " - a question mark indicates the letter is in not in the word.\n")
 
-    wordle_grid = create_wordle_grid()
-    print_wordle_grid(wordle_grid)
+    wordle_grid1 = create_wordle_grid()
+    wordle_grid2 = create_wordle_grid()
+    print_wordle_grids(wordle_grid1, wordle_grid2)
 
     # gameplay
-    while turn < 6 and not win_condition:
+    # while there are turns left and both answers haven't been correctly guessed
+    while turn < 6 and not (win1 and win2):
         # getting input
-        guess = input("\nType in your guess here: ")
+        guess = input("\nType in your guess here: ").upper()
 
-        while guess.upper() not in word_data:
-            guess = input("Invalid word. Type in another guess: ")
+        while guess not in word_data:
+            guess = input("Invalid word. Type in another guess: ").upper()
 
         # compare guess and answer
-        checked_guess = check_guess(guess, answer)
+        checked_guess1 = check_guess(guess, answer1)
+        checked_guess2 = check_guess(guess, answer2)
 
         # update and print the wordle grid
-        update_wordle_grid(checked_guess, turn, wordle_grid)
-        print(wordle_grid)
-        print_wordle_grid(wordle_grid)  # prints the wordle_grid
+        if not win1:
+            update_wordle_grid(checked_guess1, turn, wordle_grid1)
 
-        # check win
-        if answer == guess:
-            win_condition = True
+        if not win2:
+            update_wordle_grid(checked_guess2, turn, wordle_grid2)
+
+        print_wordle_grids(wordle_grid1, wordle_grid2)  # prints the wordle_grids
+
+        # win condition
+        if guess == answer1:
+            win1 = True
+
+        if guess == answer2:
+            win2 = True
+
+        turn += 1
 
     # post-game
-    if win_condition:
-        print('You win!')
+    if win1 and win2:
+        print('\nYou win!')
 
     else:
-        print('You lose :(')
+        print('\nYou lose :(')
+
+    print(f"\nAnswers: {answer1}, {answer2}")
 
 
 if __name__ == "__main__":
