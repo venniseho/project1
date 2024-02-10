@@ -297,16 +297,13 @@ if __name__ == "__main__":
                 available_actions.append("examine")
 
         if choice == 'move':
-<<<<<<< HEAD
             print("Moves left:", move_limit, "\n")
             location_description(p, location)
             print("\nWhat to do? ")
-=======
             location_description(p, location)
             # Depending on whether it's been visited before,
             # print either full description (first time visit) or brief description (every subsequent visit)
             print("What to do? \n")
->>>>>>> e70f7c8e87e610af09ebd3a1fc507e471b3ed4ee
 
         print("\n[menu]")
 
