@@ -91,7 +91,10 @@ def show_map(map_data: list[list[int]], location_data: list[Location]) -> None:
 
             # if it's a hallway or blocked area, check the first_visit attribute
             # (True if the player has not visited before)
-            if (location_num == 0 or location_num == -1) and location_data[location_num].first_visit[(x, y)]:
+            if location_num == -1:
+                map_row.append('-')
+
+            elif location_num == 0 and location_data[location_num].first_visit[(x, y)]:
                 map_row.append('?')
 
             # otherwise, just check the first_visit attribute
@@ -115,6 +118,7 @@ def show_map(map_data: list[list[int]], location_data: list[Location]) -> None:
     # print the legend for the map location names
     legend = [f"{location_data[i].map_position} - {location_data[i].name}" for i in known_locations]
     print()
+    print('- - Unaccessible Square')
     for i in legend:
         print(i)
 
@@ -237,7 +241,7 @@ if __name__ == "__main__":
             if not location.examined: available_actions.append("examine")
 
         if choice == 'move':
-            print(location_description(location))
+            location_description(p, location)
             # Depending on whether it's been visited before,
             # print either full description (first time visit) or brief description (every subsequent visit)
             print("What to do? \n")
