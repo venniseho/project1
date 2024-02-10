@@ -145,12 +145,14 @@ class Player:
     - points: int
     - victory: bool
     - food: int
+    - move_limit: int
 
     Representation Invariants:
     - 0 <= self.x <= 6
     - 0 <= self.y <= 5
     - self.points >= 0
-    - food >= 0
+    - self.food >= 0
+    - self.move_limit > 0
     """
     x: int
     y: int
@@ -158,6 +160,7 @@ class Player:
     points: int
     victory: bool
     food: int
+    move_limit: int
 
     def __init__(self, x: int, y: int) -> None:
         """
@@ -174,6 +177,7 @@ class Player:
         self.points = 0
         self.victory = False
         self.food = 0
+        self.move_limit = 35
 
 
 class BlockedOrHallway(Location):
@@ -299,8 +303,9 @@ class UsableItem(Item):
         if self.is_food:
             p.points += 5
             p.food += 1
+            p.move_limit += 1
             p.inventory.remove(self)
-            print("You have eaten food, 5 points added!")
+            print("You have eaten food, 5 points added and 1 move added!")
 
         elif self.name == 'Transportation Card':
             if location.map_position == 2:
