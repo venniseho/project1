@@ -110,7 +110,12 @@ def print_stats(opponent_health: int, health: int, heal: int, special: int) -> N
 
 
 def print_move(your_move: str, attack: int) -> None:
-    """Print the move you made against your opponent"""
+    """Print the move you made against your opponent
+    Preconditions:
+        - your_move in ['attack', 'heal', 'burn']
+        - attack >= 0
+    """
+
     if your_move == 'attack':
         print("You punch your friend, dealing " + str(attack) + " damage.")
     elif your_move == 'heal':

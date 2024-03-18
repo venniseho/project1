@@ -19,33 +19,40 @@
 
 \item Food/Usable (subclass)
 	\begin{itemize}
-	\item Places food throughout the map that gives points, along with another usable item (transportation card)
+	\item Basic description of what the enhancement is: Places food throughout the map that gives points, along with another usable item (transportation card)
 	which can be used at the subway station (location 2) and allows for direct travel form there to the exam centre.
-	\item Medium
-	\item Some aspects such as transportation form subway to exam centre were low but other aspects, such as adding a
-	method of the usable item class to use the item were more complex, as they involved multiple steps (removing from inventory, points, etc.). The actual inheritance also provided challenge as this had to be done in the load items method of World, by not only indicating which items had to be usable and which ones had to be simply items but also allowing for the freedom to add multiple unspecified food items in the future (fixed by creating a set list of non-food items and if the item is not in that list, it is a food).
+	\item Complexity level (low/medium/high): Medium
+	\item Reasons you believe this is the complexity level (e.g. mention implementation details)
+	Some aspects such as transportation form subway to exam centre were low, as it was simple mutation. However, other
+	aspects, such as adding a method of the usable item class to use the item were more complex, as they involved
+	multiple steps (removing from inventory, points, etc.). The actual inheritance also provided challenge as this
+	had to be done in the load items method of World by not only indicating which items had to be usable and which
+	ones had to be simply items but also allowing for the freedom to add multiple unspecified food items in the future
+	(this was fixed by creating a set list of non-food items and if the item is not in that list, it is a food).
 	% Feel free to add more subheadings if you need
 	\end{itemize}
 
 
-\item Room Key / Fight (minigame)
+\item Room Key / Fight (minigame) (fight.py)
 	\begin{itemize}
-	\item Your room is locked at the beginning, with your cheat sheet inside. You need to collect the key at chestnut.
+	\item Basic description of what the enhancement is: Your room is locked at the beginning, with your cheat sheet inside. You need to collect the key at chestnut.
 	To do this, you need to engage in a fight with someone, win the key and return to the room to pick up the item.
 	To win the fight, you must:
             \begin{itemize}
             \item Eat at least 3 food items (cause you need to eat to fight)
             \item Beat the opponent in a turn based fight (that is reduce their health to 0 before yours goes to 0).
             \end{itemize}
-	\item High
-	\item While the code was not complex (implemented throguh multiple if statements), the design was complex as we had
-	 to consider game design aspects (attack/heal amounts, specials) and a mechanism for determining the opponents moves
+	\item Complexity level (low/medium/high): Medium
+	\item Reasons you believe this is the complexity level (e.g. mention implementation details)
+	While the code was not complex, the design was complex as we had to consider game design aspects (attack/heal amounts,
+	specials) and a mechanism for determining the opponents moves. However, other than that, the implementation was mostly
+	reassignments and if statements so it was farily manageable.
 	  (e.g. attack or heal).
 	% Feel free to add more subheadings if you need
 	\end{itemize}
 
 
-\item Dordle (minigame)
+\item Dordle (minigame) (dordle.py)
 	\begin{itemize}
 	\item Basic description of what the enhancement is: To acquire your cheat sheet, you must pass a game of dordle
 	(wordle but with two boards). To win, you must correctly guess both 5-letter words within 6 tries.
